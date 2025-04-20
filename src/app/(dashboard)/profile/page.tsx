@@ -32,7 +32,7 @@ export default async function ProfilePage() {
           <div>
             <h3 className="text-md font-medium text-purple-700">Change Password</h3>
             <p className="text-sm text-purple-500 mt-1">
-              To change your password, log out and use the "Forgot Password" option on the login page.
+              To change your password, log out and use the &quot;Forgot Password&quot; option on the login page.
             </p>
           </div>
           

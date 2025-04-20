@@ -69,7 +69,7 @@ export default async function OrganizationsPage() {
         </div>
       ) : (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
-          <p className="text-gray-500">You're not part of any organization yet.</p>
+          <p className="text-gray-500">You&apos;re not part of any organization yet.</p>
           <div className="mt-2 space-x-4">
             <Link href="/organizations/create" className="text-blue-600 hover:text-blue-800">
               Create Organization

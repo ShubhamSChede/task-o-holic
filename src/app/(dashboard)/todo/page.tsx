@@ -3,67 +3,94 @@
 import { createClient } from '@/lib/supabase/server';
 import TodoItem from '@/components/todo/todo-item';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-export default async function TodosPage({
+export default function TodosPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session) {
-    return null; // This shouldn't happen due to layout protection
-  }
-  
+  const [todos, setTodos] = useState<any[]>([]);
+  const [uniqueTags, setUniqueTags] = useState<Set<string>>(new Set());
+  const [error, setError] = useState<string | null>(null);
+  const [session, setSession] = useState<any>(null);
+
   // Get filter parameters
   const status = typeof searchParams.status === 'string' ? searchParams.status : undefined;
   const priority = typeof searchParams.priority === 'string' ? searchParams.priority : undefined;
   const tag = typeof searchParams.tag === 'string' ? searchParams.tag : undefined;
-  
-  // Build query
-  let query = supabase
-    .from('todos')
-    .select(`
-      *,
-      organizations (
-        name
-      )
-    `)
-    .eq('created_by', session.user.id)
-    .order('created_at', { ascending: false });
-  
-  // Apply filters
-  if (status === 'complete') {
-    query = query.eq('is_complete', true);
-  } else if (status === 'incomplete') {
-    query = query.eq('is_complete', false);
-  }
-  
-  if (priority) {
-    query = query.eq('priority', priority);
-  }
-  
-  if (tag) {
-    query = query.contains('tags', [tag]);
-  }
-  
-  // Execute query
-  const { data: todos, error } = await query;
-  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const supabase = createClient();
+      const { data: { session: userSession } } = await supabase.auth.getSession();
+
+      if (!userSession) {
+        return;
+      }
+
+      setSession(userSession);
+
+      // Build query
+      let query = supabase
+        .from('todos')
+        .select(`
+          *,
+          organizations (
+            name
+          )
+        `)
+        .eq('created_by', userSession.user.id)
+        .order('created_at', { ascending: false });
+
+      // Apply filters
+      if (status === 'complete') {
+        query = query.eq('is_complete', true);
+      } else if (status === 'incomplete') {
+        query = query.eq('is_complete', false);
+      }
+
+      if (priority) {
+        query = query.eq('priority', priority);
+      }
+
+      if (tag) {
+        query = query.contains('tags', [tag]);
+      }
+
+      // Execute query
+      const { data: todosData, error: todosError } = await query;
+
+      if (todosError) {
+        console.error('Error fetching todos:', todosError);
+        setError('Error loading tasks. Please try again.');
+        return;
+      }
+
+      setTodos(todosData || []);
+
+      // Get all unique tags for filter dropdown
+      const tags = new Set<string>();
+      todosData?.forEach(todo => {
+        if (todo.tags) {
+          todo.tags.forEach((tag: string) => tags.add(tag));
+        }
+      });
+
+      setUniqueTags(tags);
+    };
+
+    fetchData();
+  }, [searchParams, status, priority, tag]);
+
   if (error) {
-    console.error('Error fetching todos:', error);
-    return <div>Error loading tasks. Please try again.</div>;
+    return <div>{error}</div>;
   }
-  
-  // Get all unique tags for filter dropdown
-  const uniqueTags = new Set<string>();
-  todos?.forEach(todo => {
-    if (todo.tags) {
-      todo.tags.forEach(tag => uniqueTags.add(tag));
-    }
-  });
-  
+
+  if (!session) {
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

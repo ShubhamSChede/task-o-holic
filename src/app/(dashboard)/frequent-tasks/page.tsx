@@ -24,7 +24,7 @@ export default async function FrequentTasksPage() {
         <h1 className="text-2xl font-bold">Frequent Task Templates</h1>
         
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
-          <p className="text-gray-500">You haven't created any organizations yet.</p>
+          <p className="text-gray-500">You haven&apos;t created any organizations yet.</p>
           <p className="text-gray-500">Only organization creators can manage frequent task templates.</p>
           <Link href="/organizations/create" className="mt-4 inline-block text-blue-600 hover:text-blue-800">
             Create Organization

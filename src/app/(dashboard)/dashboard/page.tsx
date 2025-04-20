@@ -178,7 +178,7 @@ export default async function Dashboard() {
           </ul>
         ) : (
           <div className="px-6 py-4 text-center text-purple-500">
-            <p>You're not part of any organization yet.</p>
+            <p className="text-purple-500">You&apos;re not part of any organization yet.</p>
             <div className="mt-2">
               <Link href="/organizations/create" className="text-purple-600 hover:text-purple-800 text-sm">
                 Create Organization

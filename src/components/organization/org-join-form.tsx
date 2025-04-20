@@ -51,7 +51,7 @@ export default function OrgJoinForm() {
       }
       
       // Check if user is already a member
-      const { data: existingMember, error: memberCheckError } = await supabase
+      const { data: existingMember, error: _ } = await supabase
         .from('organization_members')
         .select('id')
         .eq('organization_id', org.id)

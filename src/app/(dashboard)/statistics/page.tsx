@@ -21,7 +21,7 @@ export default async function StatisticsPage() {
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-purple-800">Statistics</h1>
         <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-purple-200">
-          <p className="text-purple-500">You don't have any tasks yet.</p>
+          <p className="text-purple-500">You don&apos;t have any tasks yet.</p>
           <p className="text-purple-500">Create tasks to see statistics.</p>
         </div>
       </div>
