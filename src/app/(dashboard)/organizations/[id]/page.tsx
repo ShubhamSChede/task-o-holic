@@ -20,14 +20,18 @@ type Member = {
 type Todo = {
   id: string;
   title: string;
+  description: string | null;
   created_by: string;
-  priority?: string;
-  is_complete?: boolean;
-  due_date?: string;
+  priority: string | null;
+  is_complete: boolean;
+  due_date: string | null;
+  tags: string[] | null;
+  organization_id: string | null;
+  created_at: string;
+  updated_at: string;
   profiles?: {
     full_name: string | null;
   };
-  [key: string]: any; // For other properties passed to TodoItem
 };
 
 type FrequentTask = {
@@ -118,7 +122,7 @@ export default async function OrganizationPage({
         <h1 className="text-2xl font-bold text-purple-800">{organization.name}</h1>
         <div className="space-x-3">
           <Link 
-            href="/todos/create" 
+            href="/todo/create" 
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition-colors"
           >
             Create Task
