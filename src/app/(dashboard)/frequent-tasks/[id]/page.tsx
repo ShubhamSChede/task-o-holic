@@ -3,12 +3,26 @@ import { createClient } from '@/lib/supabase/server';
 import FrequentTaskForm from '@/components/frequent-task/frequent-task-form';
 import { notFound, redirect } from 'next/navigation';
 
+// Define types for better type safety
+type Task = {
+  id: string;
+  title: string;
+  description: string | null;
+  priority: string | null;
+  tags: string[] | null;
+  organization_id: string;
+  organizations?: {
+    created_by: string;
+  };
+};
+
 export default async function EditFrequentTaskPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const supabase = createClient();
+  // Add 'await' here to properly resolve the Promise
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {

@@ -5,12 +5,49 @@ import { notFound } from 'next/navigation';
 import MembersList from '@/components/organization/members-list';
 import TodoItem from '@/components/todo/todo-item';
 
+// Define types for better type safety
+type Member = {
+  id: string;
+  user_id: string;
+  role: string;
+  joined_at: string;
+  profiles?: {
+    id: string;
+    full_name: string | null;
+  };
+};
+
+type Todo = {
+  id: string;
+  title: string;
+  created_by: string;
+  priority?: string;
+  is_complete?: boolean;
+  due_date?: string;
+  profiles?: {
+    full_name: string | null;
+  };
+  [key: string]: any; // For other properties passed to TodoItem
+};
+
+type FrequentTask = {
+  id: string;
+  title: string;
+  description: string | null;
+  priority: string | null;
+  tags: string[] | null;
+  organization_id: string;
+  created_at: string;
+  created_by: string;
+};
+
 export default async function OrganizationPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const supabase = createClient();
+  // Add 'await' here to properly resolve the Promise
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
@@ -112,7 +149,7 @@ export default async function OrganizationPage({
             <span className="font-medium text-purple-700">
               {organization.created_by === session.user.id 
                 ? 'You' 
-                : members?.find(m => m.user_id === organization.created_by)?.profiles?.full_name || 'Unknown'}
+                : members?.find((m: Member) => m.user_id === organization.created_by)?.profiles?.full_name || 'Unknown'}
             </span>
           </div>
           <div>
@@ -142,7 +179,7 @@ export default async function OrganizationPage({
             
             {todos && todos.length > 0 ? (
               <div className="p-4 grid gap-4">
-                {todos.map((todo) => (
+                {todos.map((todo: Todo) => (
                   <div key={todo.id} className="border border-purple-100 rounded-md p-4">
                     <TodoItem
                       todo={todo}
@@ -176,7 +213,7 @@ export default async function OrganizationPage({
               
               {frequentTasks && frequentTasks.length > 0 ? (
                 <ul className="divide-y divide-purple-100">
-                  {frequentTasks.map((task) => (
+                  {frequentTasks.map((task: FrequentTask) => (
                     <li key={task.id} className="px-6 py-4">
                       <div className="flex items-center justify-between">
                         <div>
@@ -194,7 +231,7 @@ export default async function OrganizationPage({
                                 {task.priority}
                               </span>
                             )}
-                            {task.tags && task.tags.map((tag) => (
+                            {task.tags && task.tags.map((tag: string) => (
                               <span key={tag} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full mr-2">
                                 {tag}
                               </span>

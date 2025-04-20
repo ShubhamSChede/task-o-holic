@@ -3,12 +3,33 @@ import { createClient } from '@/lib/supabase/server';
 import TodoForm from '@/components/todo/todo-form';
 import { notFound, redirect } from 'next/navigation';
 
+// Define types for organization data and todo
+type OrgMember = {
+  organizations?: {
+    id: string;
+    name: string;
+  };
+};
+
+type Todo = {
+  id: string;
+  title: string;
+  description?: string | null;
+  due_date?: string | null;
+  priority?: string | null;
+  tags?: string[] | null;
+  organization_id?: string | null;
+  is_complete: boolean;
+  created_by: string;
+};
+
 export default async function EditTodoPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const supabase = createClient();
+  // Add 'await' here to properly resolve the Promise
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
@@ -42,7 +63,8 @@ export default async function EditTodoPage({
     `)
     .eq('user_id', session.user.id);
   
-  const organizations = userOrganizations?.map(org => ({
+  // Add type annotation to 'org' parameter
+  const organizations = userOrganizations?.map((org: OrgMember) => ({
     id: org.organizations?.id || '',
     name: org.organizations?.name || '',
   })) || [];

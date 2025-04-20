@@ -3,8 +3,30 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import FrequentTaskItem from '@/components/frequent-task/frequent-task-item';
 
+// Define types to fix the 'any' type errors
+type Organization = {
+  id: string;
+  name: string;
+  created_by?: string;
+};
+
+type FrequentTask = {
+  id: string;
+  title: string;
+  description: string | null;
+  organization_id: string;
+  created_at: string;
+  created_by: string;
+  priority: string | null;
+  tags: string[] | null;
+  organizations?: {
+    name: string;
+  };
+};
+
 export default async function FrequentTasksPage() {
-  const supabase = createClient();
+  // Add 'await' to fix the Promise issue
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
@@ -34,8 +56,8 @@ export default async function FrequentTasksPage() {
     );
   }
   
-  // Get organization IDs
-  const orgIds = createdOrganizations.map(org => org.id);
+  // Get organization IDs - Add type annotation to 'org' parameter
+  const orgIds = createdOrganizations.map((org: Organization) => org.id);
   
   // Fetch frequent tasks for all organizations created by the user
   const { data: frequentTasks } = await supabase
@@ -66,9 +88,9 @@ export default async function FrequentTasksPage() {
         </p>
       </div>
       
-      {/* List of templates by organization */}
-      {createdOrganizations.map((org) => {
-        const orgTasks = frequentTasks?.filter(task => task.organization_id === org.id) || [];
+      {/* List of templates by organization - Add type annotation to 'org' parameter */}
+      {createdOrganizations.map((org: Organization) => {
+        const orgTasks = frequentTasks?.filter((task: FrequentTask) => task.organization_id === org.id) || [];
         
         return (
           <div key={org.id} className="space-y-4">
@@ -84,7 +106,7 @@ export default async function FrequentTasksPage() {
             
             {orgTasks.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {orgTasks.map((task) => (
+                {orgTasks.map((task: FrequentTask) => (
                   <FrequentTaskItem key={task.id} task={task} />
                 ))}
               </div>

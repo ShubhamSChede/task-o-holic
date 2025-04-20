@@ -2,8 +2,24 @@
 import { createClient } from '@/lib/supabase/server';
 import StatisticsCharts from '@/components/dashboard/statistics-charts';
 
+// Define Todo type for better type safety
+type Todo = {
+  id: string;
+  title: string;
+  description?: string | null;
+  created_by: string;
+  priority?: string | null;
+  is_complete: boolean;
+  due_date?: string | null;
+  tags?: string[] | null;
+  organization_id?: string | null;
+  created_at: string;
+  updated_at?: string;
+};
+
 export default async function StatisticsPage() {
-  const supabase = createClient();
+  // Add 'await' here to fix Promise error
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
@@ -32,7 +48,7 @@ export default async function StatisticsPage() {
   
   // 1. Tasks by priority
   const priorityMap = new Map<string, number>();
-  todos.forEach(todo => {
+  todos.forEach((todo: Todo) => {
     const priority = todo.priority || 'none';
     priorityMap.set(priority, (priorityMap.get(priority) || 0) + 1);
   });
@@ -43,7 +59,7 @@ export default async function StatisticsPage() {
   }));
   
   // 2. Tasks by status
-  const completedCount = todos.filter(todo => todo.is_complete).length;
+  const completedCount = todos.filter((todo: Todo) => todo.is_complete).length;
   const pendingCount = todos.length - completedCount;
   
   const todosByStatus = [
@@ -53,9 +69,9 @@ export default async function StatisticsPage() {
   
   // 3. Tasks by tag
   const tagMap = new Map<string, number>();
-  todos.forEach(todo => {
+  todos.forEach((todo: Todo) => {
     if (todo.tags && todo.tags.length > 0) {
-      todo.tags.forEach(tag => {
+      todo.tags.forEach((tag: string) => {
         tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
       });
     } else {
@@ -84,7 +100,7 @@ export default async function StatisticsPage() {
   }
   
   // Populate with actual data
-  todos.forEach(todo => {
+  todos.forEach((todo: Todo) => {
     const createdAt = new Date(todo.created_at);
     const dateStr = createdAt.toISOString().split('T')[0];
     

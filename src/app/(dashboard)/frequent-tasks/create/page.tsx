@@ -8,7 +8,7 @@ export default async function CreateFrequentTaskPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {

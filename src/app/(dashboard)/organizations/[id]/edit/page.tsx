@@ -3,12 +3,22 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound, redirect } from 'next/navigation';
 import OrgForm from '@/components/organization/org-form';
 
+// Define Organization type for better type safety
+type Organization = {
+  id: string;
+  name: string;
+  description: string | null;
+  password?: string | null;
+  created_by: string;
+};
+
 export default async function EditOrganizationPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const supabase = createClient();
+  // Add 'await' here to properly resolve the Promise
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {

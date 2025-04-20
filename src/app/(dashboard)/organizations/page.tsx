@@ -2,8 +2,21 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 
+// Define type for organization data
+type OrgMember = {
+  role: string;
+  joined_at: string;
+  organizations?: {
+    id: string;
+    name: string;
+    description: string | null;
+    created_by: string;
+  };
+};
+
 export default async function OrganizationsPage() {
-  const supabase = createClient();
+  // Add 'await' to fix Promise error
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
@@ -42,7 +55,7 @@ export default async function OrganizationsPage() {
       
       {userOrganizations && userOrganizations.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {userOrganizations.map((org) => (
+          {userOrganizations.map((org: OrgMember) => (
             <Link 
               key={org.organizations?.id} 
               href={`/organizations/${org.organizations?.id}`}

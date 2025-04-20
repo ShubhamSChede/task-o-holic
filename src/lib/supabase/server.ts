@@ -1,12 +1,11 @@
 // src/lib/supabase/server.ts
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '@/types/supabase';
 import { cache } from 'react';
 
-import { serialize } from 'cookie';
-
 export const createClient = cache(() => {
+  // Using the modern Next.js cookies API which should be synchronous
   const cookieStore = cookies();
   
   return createServerClient<Database>(
@@ -14,29 +13,18 @@ export const createClient = cache(() => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async get(name: string) {
-          return (await cookieStore).get(name)?.value;
+        get(name: string) {
+          return cookieStore.get(name)?.value;
         },
-        async set(name: string, value: string, options: any) {
-          try {
-            (await cookieStore).set({ name, value, ...options });
-          } catch (error) {
-            // We can't use cookies.set in a Server Component
-            // so we need to handle this case
-          }
+        set(name: string, value: string, options: CookieOptions) {
+          // Directly set the cookie with name/value format instead of object
+          cookieStore.set(name, value, options as any);
         },
-        async remove(name: string, options: any) {
-          try {
-            (await cookieStore).set({ name, value: '', ...options });
-          } catch (error) {
-            // We can't use cookies.set in a Server Component
-            // so we need to handle this case
-          }
-        }
-      }
+        remove(name: string, options: CookieOptions) {
+          // Empty value and maxAge=0 effectively removes the cookie
+          cookieStore.set(name, '', { ...options as any, maxAge: 0 });
+        },
+      },
     }
   );
 });
-
-
-

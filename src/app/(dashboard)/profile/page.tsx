@@ -2,8 +2,17 @@
 import { createClient } from '@/lib/supabase/server';
 import ProfileForm from '@/components/profile/profile-form';
 
+// Define Profile type for better type safety
+type Profile = {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  created_at?: string;
+};
+
 export default async function ProfilePage() {
-  const supabase = createClient();
+  // Add 'await' here to properly resolve the Promise
+  const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
