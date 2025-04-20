@@ -21,7 +21,7 @@ export default function LandingPage() {
         transition={{ duration: 0.8 }}
       >
         <motion.h1
-          className="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-purple-700 to-purple-400 text-transparent bg-clip-text"
+          className="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-purple-400 to-purple-800 text-transparent bg-clip-text"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.7 }}
