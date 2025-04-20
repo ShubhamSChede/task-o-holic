@@ -36,7 +36,8 @@ export default function MembersList({ members, organizationId, isCreator, curren
       const { error } = await supabase
         .from('organization_members')
         .delete()
-        .eq('id', memberId);
+        .eq('id', memberId)
+        .eq('organization_id', organizationId);
       
       if (error) throw error;
       router.refresh();

@@ -5,22 +5,6 @@ import { notFound } from 'next/navigation';
 import MembersList from '@/components/organization/members-list';
 import TodoItem from '@/components/todo/todo-item';
 
-interface MembersListProps {
-  members: {
-    id: string;
-    user_id: string;
-    role: string;
-    joined_at: string;
-    profiles: {
-      id: string;
-      full_name: string | null;
-    };
-  }[];
-  organizationId: string;
-  isCreator: boolean;
-  currentUserId: string;
-}
-
 export default async function OrganizationPage({
   params,
 }: {
