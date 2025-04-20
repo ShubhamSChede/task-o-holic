@@ -181,7 +181,7 @@ export default function TodosPage({
       ) : (
         <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-purple-200">
           <p className="text-purple-500">No tasks found.</p>
-          <Link href="/todos/create" className="mt-2 inline-block text-purple-600 hover:text-purple-800">
+          <Link href="/todo/create" className="mt-2 inline-block text-purple-600 hover:text-purple-800">
             Create your first task
           </Link>
         </div>

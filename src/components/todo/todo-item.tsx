@@ -126,7 +126,7 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
       {isCreator && (
         <div className="mt-4 flex space-x-3 pt-4 border-t border-purple-200">
           <button 
-            onClick={() => router.push(`/todos/${todo.id}`)}
+            onClick={() => router.push(`/todo/${todo.id}`)}
             className="text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors"
           >
             Edit

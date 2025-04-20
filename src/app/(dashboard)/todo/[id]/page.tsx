@@ -49,7 +49,7 @@ export default async function EditTodoPage({
   
   // Check if user is the creator
   if (todo.created_by !== session.user.id) {
-    redirect('/todos');
+    redirect('/todo');
   }
   
   // Fetch user's organizations
