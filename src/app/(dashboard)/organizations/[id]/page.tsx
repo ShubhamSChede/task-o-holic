@@ -107,14 +107,13 @@ export default async function OrganizationPage({
     .eq('organization_id', params.id)
     .order('created_at', { ascending: false });
   
-  // Fetch frequent tasks if user is creator
-  const { data: frequentTasks } = isCreator
-    ? await supabase
-        .from('frequent_tasks')
-        .select('*')
-        .eq('organization_id', params.id)
-        .order('created_at', { ascending: false })
-    : { data: null };
+  // Fetch frequent tasks for this organization
+  // Note: removed the isCreator condition so all members can see templates
+  const { data: frequentTasks } = await supabase
+    .from('frequent_tasks')
+    .select('*')
+    .eq('organization_id', params.id)
+    .order('created_at', { ascending: false });
   
   return (
     <div className="space-y-6">
@@ -174,7 +173,7 @@ export default async function OrganizationPage({
             <div className="px-6 py-4 border-b border-purple-200 flex justify-between items-center">
               <h2 className="font-medium text-lg text-purple-800">Organization Tasks</h2>
               <Link 
-                href="/todos/create" 
+                href="/todo/create" 
                 className="text-purple-600 hover:text-purple-800 text-sm"
               >
                 Add Task
@@ -202,62 +201,64 @@ export default async function OrganizationPage({
             )}
           </div>
           
-          {/* Frequent Tasks (Only visible to creator) */}
-          {isCreator && (
-            <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-purple-200 flex justify-between items-center">
-                <h2 className="font-medium text-lg text-purple-800">Frequent Tasks Templates</h2>
+          {/* Frequent Tasks (Now visible to all members) */}
+          <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-purple-200 flex justify-between items-center">
+              <h2 className="font-medium text-lg text-purple-800">Frequent Tasks Templates</h2>
+              {isCreator && (
                 <Link 
                   href={`/frequent-tasks/create?org=${params.id}`} 
                   className="text-purple-600 hover:text-purple-800 text-sm"
                 >
                   Add Template
                 </Link>
-              </div>
-              
-              {frequentTasks && frequentTasks.length > 0 ? (
-                <ul className="divide-y divide-purple-100">
-                  {frequentTasks.map((task: FrequentTask) => (
-                    <li key={task.id} className="px-6 py-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-purple-900">{task.title}</p>
-                          {task.description && (
-                            <p className="text-sm text-purple-600 mt-1">{task.description}</p>
-                          )}
-                          <div className="flex mt-2">
-                            {task.priority && (
-                              <span className={`px-2 py-1 text-xs rounded-full mr-2 ${
-                                task.priority === 'high' ? 'bg-red-100 text-red-800' : 
-                                task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-green-100 text-green-800'
-                              }`}>
-                                {task.priority}
-                              </span>
-                            )}
-                            {task.tags && task.tags.map((tag: string) => (
-                              <span key={tag} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full mr-2">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <button 
-                          className="text-purple-600 hover:text-purple-800 text-sm"
-                        >
-                          Use Template
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="px-6 py-4 text-center text-purple-500">
-                  No frequent task templates yet.
-                </div>
               )}
             </div>
-          )}
+            
+            {frequentTasks && frequentTasks.length > 0 ? (
+              <ul className="divide-y divide-purple-100">
+                {frequentTasks.map((task: FrequentTask) => (
+                  <li key={task.id} className="px-6 py-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-purple-900">{task.title}</p>
+                        {task.description && (
+                          <p className="text-sm text-purple-600 mt-1">{task.description}</p>
+                        )}
+                        <div className="flex mt-2">
+                          {task.priority && (
+                            <span className={`px-2 py-1 text-xs rounded-full mr-2 ${
+                              task.priority === 'high' ? 'bg-red-100 text-red-800' : 
+                              task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
+                              'bg-green-100 text-green-800'
+                            }`}>
+                              {task.priority}
+                            </span>
+                          )}
+                          {task.tags && task.tags.map((tag: string) => (
+                            <span key={tag} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full mr-2">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      {/* Changed to Link instead of button for direct navigation */}
+                      <Link 
+                        href={`/todo/create?template=${task.id}`}
+                        className="text-purple-600 hover:text-purple-800 text-sm"
+                      >
+                        Use Template
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="px-6 py-4 text-center text-purple-500">
+                No frequent task templates yet.
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Members Column */}

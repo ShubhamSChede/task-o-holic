@@ -1,8 +1,8 @@
 // src/components/todo/todo-form.tsx
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 type TodoFormProps = {
@@ -25,6 +25,7 @@ type TodoFormProps = {
 
 export default function TodoForm({ initialData, organizations, mode }: TodoFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [formData, setFormData] = useState({
@@ -39,6 +40,44 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Check for template parameter when the component mounts
+  useEffect(() => {
+    const loadTemplateData = async () => {
+      const templateId = searchParams.get('template');
+      
+      if (templateId && mode === 'create') {
+        setLoading(true);
+        try {
+          // Fetch the template data
+          const { data: template, error } = await supabase
+            .from('frequent_tasks')
+            .select('*')
+            .eq('id', templateId)
+            .single();
+          
+          if (error) throw error;
+          
+          // Pre-fill the form with template data
+          setFormData(prev => ({
+            ...prev,
+            title: template.title,
+            description: template.description || '',
+            priority: template.priority || '',
+            tags: template.tags?.join(', ') || '',
+            organization_id: template.organization_id,
+          }));
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : 'Error loading template';
+          console.error(errorMessage);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadTemplateData();
+  }, [searchParams, supabase, mode]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -83,8 +122,9 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
 
       router.push('/todo');
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || 'An error occurred');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
