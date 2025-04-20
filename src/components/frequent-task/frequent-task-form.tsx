@@ -119,7 +119,7 @@ export default function FrequentTaskForm({
           value={formData.title}
           onChange={handleChange}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
           disabled={loading}
         />
       </div>
@@ -134,7 +134,7 @@ export default function FrequentTaskForm({
           value={formData.description}
           onChange={handleChange}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
           disabled={loading}
         ></textarea>
       </div>
@@ -148,7 +148,7 @@ export default function FrequentTaskForm({
           name="priority"
           value={formData.priority}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
           disabled={loading}
         >
           <option value="">-- Select Priority --</option>
@@ -169,7 +169,7 @@ export default function FrequentTaskForm({
           value={formData.tags}
           onChange={handleChange}
           placeholder="work, project, meeting"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
           disabled={loading}
         />
       </div>
@@ -184,7 +184,7 @@ export default function FrequentTaskForm({
           value={formData.organization_id}
           onChange={handleChange}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
           disabled={loading || !!preSelectedOrgId}
         >
           <option value="">-- Select Organization --</option>

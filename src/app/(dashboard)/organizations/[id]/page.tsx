@@ -50,7 +50,6 @@ export default async function OrganizationPage({
 }: {
   params: { id: string };
 }) {
-  // Add 'await' here to properly resolve the Promise
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
@@ -108,7 +107,6 @@ export default async function OrganizationPage({
     .order('created_at', { ascending: false });
   
   // Fetch frequent tasks for this organization
-  // Note: removed the isCreator condition so all members can see templates
   const { data: frequentTasks } = await supabase
     .from('frequent_tasks')
     .select('*')
@@ -116,20 +114,21 @@ export default async function OrganizationPage({
     .order('created_at', { ascending: false });
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-purple-800">{organization.name}</h1>
-        <div className="space-x-3">
+    <div className="space-y-6 px-2 sm:px-0">
+      {/* Header - Responsive layout for small screens */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-purple-800">{organization.name}</h1>
+        <div className="flex flex-wrap gap-2">
           <Link 
             href="/todo/create" 
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition-colors"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors"
           >
             Create Task
           </Link>
           {isCreator && (
             <Link 
               href={`/organizations/${params.id}/edit`} 
-              className="bg-white hover:bg-gray-50 text-purple-800 border border-purple-200 px-4 py-2 rounded-md text-sm transition-colors"
+              className="bg-white hover:bg-gray-50 text-purple-800 border border-purple-200 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors"
             >
               Edit Organization
             </Link>
@@ -138,11 +137,11 @@ export default async function OrganizationPage({
       </div>
       
       {/* Organization Details */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-purple-200">
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-purple-200">
         {organization.description && (
           <div className="mb-4">
             <h2 className="text-lg font-medium mb-2 text-purple-800">Description</h2>
-            <p className="text-purple-600">{organization.description}</p>
+            <p className="text-purple-600 text-sm sm:text-base">{organization.description}</p>
           </div>
         )}
         
@@ -166,36 +165,38 @@ export default async function OrganizationPage({
         </div>
       </div>
       
+      {/* Responsive grid layout - Stacked on mobile, side-by-side on desktop */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Tasks Column */}
+        {/* Tasks Column - Full width on mobile, 2/3 width on desktop */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Organization Tasks */}
           <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-purple-200 flex justify-between items-center">
-              <h2 className="font-medium text-lg text-purple-800">Organization Tasks</h2>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-purple-200 flex justify-between items-center">
+              <h2 className="font-medium text-base sm:text-lg text-purple-800">Organization Tasks</h2>
               <Link 
                 href="/todo/create" 
-                className="text-purple-600 hover:text-purple-800 text-sm"
+                className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm"
               >
                 Add Task
               </Link>
             </div>
             
             {todos && todos.length > 0 ? (
-              <div className="p-4 grid gap-4">
+              <div className="p-3 sm:p-4 grid gap-3 sm:gap-4">
                 {todos.map((todo: Todo) => (
-                  <div key={todo.id} className="border border-purple-100 rounded-md p-4">
+                  <div key={todo.id} className="border border-purple-100 rounded-md p-3 sm:p-4">
                     <TodoItem
                       todo={todo}
                       userId={session.user.id}
                     />
-                    <div className="mt-3 text-xs text-purple-500">
+                    <div className="mt-2 sm:mt-3 text-xs text-purple-500">
                       Created by: {todo.created_by === session.user.id ? 'You' : todo.profiles?.full_name || 'Unknown'}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="px-6 py-4 text-center text-purple-500">
+              <div className="px-4 sm:px-6 py-4 text-center text-purple-500 text-sm">
                 No tasks in this organization yet.
               </div>
             )}
@@ -203,12 +204,12 @@ export default async function OrganizationPage({
           
           {/* Frequent Tasks (Now visible to all members) */}
           <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-purple-200 flex justify-between items-center">
-              <h2 className="font-medium text-lg text-purple-800">Frequent Tasks Templates</h2>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-purple-200 flex justify-between items-center">
+              <h2 className="font-medium text-base sm:text-lg text-purple-800">Frequent Tasks Templates</h2>
               {isCreator && (
                 <Link 
                   href={`/frequent-tasks/create?org=${params.id}`} 
-                  className="text-purple-600 hover:text-purple-800 text-sm"
+                  className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm"
                 >
                   Add Template
                 </Link>
@@ -218,16 +219,16 @@ export default async function OrganizationPage({
             {frequentTasks && frequentTasks.length > 0 ? (
               <ul className="divide-y divide-purple-100">
                 {frequentTasks.map((task: FrequentTask) => (
-                  <li key={task.id} className="px-6 py-4">
-                    <div className="flex items-center justify-between">
+                  <li key={task.id} className="px-4 sm:px-6 py-3 sm:py-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
                         <p className="font-medium text-purple-900">{task.title}</p>
                         {task.description && (
-                          <p className="text-sm text-purple-600 mt-1">{task.description}</p>
+                          <p className="text-xs sm:text-sm text-purple-600 mt-1">{task.description}</p>
                         )}
-                        <div className="flex mt-2">
+                        <div className="flex flex-wrap mt-2 gap-1 sm:gap-2">
                           {task.priority && (
-                            <span className={`px-2 py-1 text-xs rounded-full mr-2 ${
+                            <span className={`px-2 py-0.5 text-xs rounded-full ${
                               task.priority === 'high' ? 'bg-red-100 text-red-800' : 
                               task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
                               'bg-green-100 text-green-800'
@@ -236,16 +237,16 @@ export default async function OrganizationPage({
                             </span>
                           )}
                           {task.tags && task.tags.map((tag: string) => (
-                            <span key={tag} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full mr-2">
+                            <span key={tag} className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">
                               {tag}
                             </span>
                           ))}
                         </div>
                       </div>
-                      {/* Changed to Link instead of button for direct navigation */}
+                      {/* Mobile-friendly link */}
                       <Link 
                         href={`/todo/create?template=${task.id}`}
-                        className="text-purple-600 hover:text-purple-800 text-sm"
+                        className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm px-2 py-1 border border-purple-200 rounded-md inline-block"
                       >
                         Use Template
                       </Link>
@@ -254,14 +255,14 @@ export default async function OrganizationPage({
                 ))}
               </ul>
             ) : (
-              <div className="px-6 py-4 text-center text-purple-500">
+              <div className="px-4 sm:px-6 py-4 text-center text-purple-500 text-sm">
                 No frequent task templates yet.
               </div>
             )}
           </div>
         </div>
         
-        {/* Members Column */}
+        {/* Members Column - Full width on mobile, 1/3 width on desktop */}
         <div className="lg:col-span-1">
           <MembersList 
             members={members || []} 

@@ -15,7 +15,6 @@ type OrgMember = {
 };
 
 export default async function OrganizationsPage() {
-  // Add 'await' to fix Promise error
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
@@ -40,39 +39,46 @@ export default async function OrganizationsPage() {
     .order('joined_at', { ascending: false });
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Organizations</h1>
-        <div className="space-x-3">
-          <Link href="/organizations/join" className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 px-4 py-2 rounded-md text-sm">
+    <div className="space-y-6 px-2 sm:px-0">
+      {/* Responsive header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold">My Organizations</h1>
+        <div className="flex flex-wrap gap-2">
+          <Link 
+            href="/organizations/join" 
+            className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm"
+          >
             Join Organization
           </Link>
-          <Link href="/organizations/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm">
+          <Link 
+            href="/organizations/create" 
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm"
+          >
             Create Organization
           </Link>
         </div>
       </div>
       
       {userOrganizations && userOrganizations.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {userOrganizations.map((org: OrgMember) => (
             <Link 
               key={org.organizations?.id} 
               href={`/organizations/${org.organizations?.id}`}
               className="block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow transition-shadow"
             >
-              <div className="p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-2">{org.organizations?.name}</h2>
+              <div className="p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-medium text-gray-900 mb-2">{org.organizations?.name}</h2>
                 
                 {org.organizations?.description && (
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{org.organizations?.description}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2">{org.organizations?.description}</p>
                 )}
                 
-                <div className="flex items-center text-xs text-gray-500">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                     {org.organizations?.created_by === session.user.id ? 'Creator' : 'Member'}
                   </span>
-                  <span className="ml-2">
+                  <span>
                     Joined {new Date(org.joined_at).toLocaleDateString()}
                   </span>
                 </div>
@@ -81,13 +87,13 @@ export default async function OrganizationsPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
-          <p className="text-gray-500">You&apos;re not part of any organization yet.</p>
-          <div className="mt-2 space-x-4">
-            <Link href="/organizations/create" className="text-blue-600 hover:text-blue-800">
+        <div className="text-center py-8 sm:py-12 bg-white rounded-lg shadow-sm border border-gray-200">
+          <p className="text-gray-500 text-sm sm:text-base">You&apos;re not part of any organization yet.</p>
+          <div className="mt-2 sm:mt-4 flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
+            <Link href="/organizations/create" className="text-blue-600 hover:text-blue-800 text-sm sm:text-base">
               Create Organization
             </Link>
-            <Link href="/organizations/join" className="text-blue-600 hover:text-blue-800">
+            <Link href="/organizations/join" className="text-blue-600 hover:text-blue-800 text-sm sm:text-base">
               Join Organization
             </Link>
           </div>
