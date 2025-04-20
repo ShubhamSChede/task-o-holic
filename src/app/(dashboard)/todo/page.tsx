@@ -1,9 +1,10 @@
 // src/app/(dashboard)/todos/page.tsx
-"use client"
-import { createClient } from '@/lib/supabase/server';
+"use client";
+
 import TodoItem from '@/components/todo/todo-item';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { fetchFromSupabase } from '@/lib/supabase/client-fetcher';
 
 export default function TodosPage({
   searchParams,
@@ -22,62 +23,44 @@ export default function TodosPage({
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient();
-      const { data: { session: userSession } } = await supabase.auth.getSession();
+      try {
+        // Use the client-side fetcher
+        const fetcher = await fetchFromSupabase();
+        const { data: { session: userSession } } = await fetcher.getSession();
 
-      if (!userSession) {
-        return;
-      }
-
-      setSession(userSession);
-
-      // Build query
-      let query = supabase
-        .from('todos')
-        .select(`
-          *,
-          organizations (
-            name
-          )
-        `)
-        .eq('created_by', userSession.user.id)
-        .order('created_at', { ascending: false });
-
-      // Apply filters
-      if (status === 'complete') {
-        query = query.eq('is_complete', true);
-      } else if (status === 'incomplete') {
-        query = query.eq('is_complete', false);
-      }
-
-      if (priority) {
-        query = query.eq('priority', priority);
-      }
-
-      if (tag) {
-        query = query.contains('tags', [tag]);
-      }
-
-      // Execute query
-      const { data: todosData, error: todosError } = await query;
-
-      if (todosError) {
-        console.error('Error fetching todos:', todosError);
-        setError('Error loading tasks. Please try again.');
-        return;
-      }
-
-      setTodos(todosData || []);
-
-      // Get all unique tags for filter dropdown
-      const tags = new Set<string>();
-      todosData?.forEach(todo => {
-        if (todo.tags) {
-          todo.tags.forEach((tag: string) => tags.add(tag));
+        if (!userSession) {
+          return;
         }
-      });
 
-      setUniqueTags(tags);
+        setSession(userSession);
+
+        // Execute query
+        const { data: todosData, error: todosError } = await fetcher.getTodos(
+          userSession.user.id, 
+          { status, priority, tag }
+        );
+
+        if (todosError) {
+          console.error('Error fetching todos:', todosError);
+          setError('Error loading tasks. Please try again.');
+          return;
+        }
+
+        setTodos(todosData || []);
+
+        // Get all unique tags for filter dropdown
+        const tags = new Set<string>();
+        todosData?.forEach(todo => {
+          if (todo.tags) {
+            todo.tags.forEach((tag: string) => tags.add(tag));
+          }
+        });
+
+        setUniqueTags(tags);
+      } catch (err) {
+        console.error('Error:', err);
+        setError('An unexpected error occurred');
+      }
     };
 
     fetchData();
