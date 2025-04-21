@@ -125,7 +125,7 @@ export default function OrgJoinForm() {
       <div className="flex space-x-4">
         <button
           type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+          className="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
           disabled={loading}
         >
           {loading ? 'Joining...' : 'Join Organization'}

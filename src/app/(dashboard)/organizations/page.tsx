@@ -52,7 +52,7 @@ export default async function OrganizationsPage() {
           </Link>
           <Link 
             href="/organizations/create" 
-            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm"
           >
             Create Organization
           </Link>
@@ -90,7 +90,7 @@ export default async function OrganizationsPage() {
         <div className="text-center py-8 sm:py-12 bg-white rounded-lg shadow-sm border border-gray-200">
           <p className="text-gray-500 text-sm sm:text-base">You&apos;re not part of any organization yet.</p>
           <div className="mt-2 sm:mt-4 flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
-            <Link href="/organizations/create" className="text-blue-600 hover:text-blue-800 text-sm sm:text-base">
+            <Link href="/organizations/create" className="bg-purple-500 hover:text-purple-800 text-sm sm:text-base">
               Create Organization
             </Link>
             <Link href="/organizations/join" className="text-blue-600 hover:text-blue-800 text-sm sm:text-base">
