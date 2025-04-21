@@ -23,7 +23,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CalendarIcon, CheckIcon, Loader2 } from "lucide-react";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,6 +30,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+function formatDate(date: Date): string {
+  const options: Intl.DateTimeFormatOptions = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  return date.toLocaleDateString('en-US', options);
+}
 
 type TodoFormProps = {
   initialData?: {
@@ -223,7 +231,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {formData.due_date ? (
-                      format(formData.due_date, "PPP")
+                      formatDate(formData.due_date)
                     ) : (
                       <span>Pick a date</span>
                     )}
@@ -234,7 +242,6 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
                     mode="single"
                     selected={formData.due_date}
                     onSelect={handleDateChange}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
