@@ -4,6 +4,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { 
+  Card, 
+  CardContent, 
+  CardFooter 
+} from "@/components/ui/card";
+import { 
+  Alert, 
+  AlertDescription 
+} from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 type OrgFormProps = {
   mode: 'create';
@@ -97,84 +111,94 @@ export default function OrgForm(props: OrgFormProps) {
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded-md">
-          {error}
-        </div>
-      )}
-      
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          Organization Name *
-        </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          disabled={loading}
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          Description
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          disabled={loading}
-        ></textarea>
-      </div>
-      
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-          Password *
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          disabled={loading}
-        />
-        <p className="mt-1 text-sm text-gray-500">
-          Members will need this password to join the organization.
-        </p>
-      </div>
-      
-      <div className="flex space-x-4">
-        <button
-          type="submit"
-          className="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading 
-            ? 'Saving...' 
-            : props.mode === 'create' 
-              ? 'Create Organization' 
-              : 'Update Organization'}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
-          disabled={loading}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+    <Card className="border-purple-200 shadow-sm">
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-6 pt-6">
+          {error && (
+            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-purple-700">
+              Organization Name *
+            </Label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-purple-700">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={3}
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 resize-none"
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-purple-700">
+              Password *
+            </Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+            <p className="mt-1 text-xs text-purple-500">
+              Members will need this password to join the organization.
+            </p>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="flex justify-start space-x-4 px-6 pb-6">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              props.mode === 'create' 
+                ? 'Create Organization' 
+                : 'Update Organization'
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={loading}
+            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
+          >
+            Cancel
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

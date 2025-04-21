@@ -100,7 +100,7 @@ export default function TodosPage({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-xl sm:text-2xl font-bold text-purple-800">My Tasks</h1>
         <Link 
-          href="/todos/create" 
+          href="/todo/create" 
           className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors w-full sm:w-auto text-center"
         >
           Create Task

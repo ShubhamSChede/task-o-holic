@@ -4,6 +4,27 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Alert,
+  AlertDescription
+} from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 type FrequentTaskFormProps = {
   initialData?: {
@@ -41,8 +62,12 @@ export default function FrequentTaskForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
   
@@ -101,122 +126,130 @@ export default function FrequentTaskForm({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded-md">
-          {error}
-        </div>
-      )}
-      
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-          Title *
-        </label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
-          disabled={loading}
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          Description
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
-          disabled={loading}
-        ></textarea>
-      </div>
-      
-      <div>
-        <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">
-          Priority
-        </label>
-        <select
-          id="priority"
-          name="priority"
-          value={formData.priority}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
-          disabled={loading}
-        >
-          <option value="">-- Select Priority --</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
-      
-      <div>
-        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
-          Tags (comma-separated)
-        </label>
-        <input
-          id="tags"
-          name="tags"
-          type="text"
-          value={formData.tags}
-          onChange={handleChange}
-          placeholder="work, project, meeting"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
-          disabled={loading}
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="organization_id" className="block text-sm font-medium text-gray-700 mb-1">
-          Organization *
-        </label>
-        <select
-          id="organization_id"
-          name="organization_id"
-          value={formData.organization_id}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
-          disabled={loading || !!preSelectedOrgId}
-        >
-          <option value="">-- Select Organization --</option>
-          {organizations.map((org) => (
-            <option key={org.id} value={org.id}>
-              {org.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      
-      <div className="flex space-x-4">
-        <button
-          type="submit"
-          className="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading 
-            ? 'Saving...' 
-            : mode === 'create' 
-              ? 'Create Template' 
-              : 'Update Template'}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 transition disabled:opacity-50"
-          disabled={loading}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+    <Card className="border-purple-200 shadow-sm">
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-6 pt-6">
+          {error && (
+            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-purple-700">
+              Title *
+            </Label>
+            <Input
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-purple-700">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={3}
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 resize-none"
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="priority" className="text-purple-700">
+              Priority
+            </Label>
+            <Select
+              value={formData.priority || "none"}
+              onValueChange={(value) => handleSelectChange('priority', value === "none" ? "" : value)}
+              disabled={loading}
+            >
+              <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
+                <SelectValue placeholder="-- Select Priority --" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">-- Select Priority --</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="tags" className="text-purple-700">
+              Tags (comma-separated)
+            </Label>
+            <Input
+              id="tags"
+              name="tags"
+              value={formData.tags}
+              onChange={handleChange}
+              placeholder="work, project, meeting"
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="organization_id" className="text-purple-700">
+              Organization *
+            </Label>
+            <Select
+              value={formData.organization_id}
+              onValueChange={(value) => handleSelectChange('organization_id', value)}
+              disabled={loading || !!preSelectedOrgId}
+            >
+              <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
+                <SelectValue placeholder="-- Select Organization --" />
+              </SelectTrigger>
+              <SelectContent>
+                {organizations.map((org) => (
+                  <SelectItem key={org.id} value={org.id}>
+                    {org.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="flex justify-start space-x-4 px-6 pb-6">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              mode === 'create' ? 'Create Template' : 'Update Template'
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={loading}
+            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
+          >
+            Cancel
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

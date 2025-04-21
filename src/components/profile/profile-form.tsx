@@ -4,6 +4,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  Card, 
+  CardContent, 
+  CardFooter 
+} from "@/components/ui/card";
+import { 
+  Alert, 
+  AlertDescription 
+} from "@/components/ui/alert";
+import { 
+  AlertCircle, 
+  CheckCircle2, 
+  Loader2 
+} from "lucide-react";
 
 type ProfileFormProps = {
   initialData: {
@@ -59,74 +76,87 @@ export default function ProfileForm({ initialData, userEmail }: ProfileFormProps
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-purple-200">
-      {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded-md">
-          {error}
-        </div>
-      )}
-      
-      {success && (
-        <div className="bg-green-50 text-green-500 p-3 rounded-md">
-          {success}
-        </div>
-      )}
-      
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-purple-700 mb-1">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          value={userEmail}
-          disabled
-          className="w-full px-3 py-2 rounded-lg border border-purple-200 bg-gray-50 text-purple-900"
-        />
-        <p className="mt-1 text-sm text-purple-500">
-          Email cannot be changed
-        </p>
-      </div>
-      
-      <div>
-        <label htmlFor="full_name" className="block text-sm font-medium text-purple-700 mb-1">
-          Full Name
-        </label>
-        <input
-          id="full_name"
-          name="full_name"
-          type="text"
-          value={formData.full_name}
-          onChange={handleChange}
-          className="w-full px-3 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          disabled={loading}
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="avatar_url" className="block text-sm font-medium text-purple-700 mb-1">
-          Avatar URL
-        </label>
-        <input
-          id="avatar_url"
-          name="avatar_url"
-          type="text"
-          value={formData.avatar_url}
-          onChange={handleChange}
-          className="w-full px-3 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          disabled={loading}
-        />
-      </div>
-      
-      <div className="flex space-x-4">
-        <button
-          type="submit"
-          className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? 'Saving...' : 'Update Profile'}
-        </button>
-      </div>
-    </form>
+    <Card className="border-purple-200 shadow-sm">
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-6 pt-6">
+          {error && (
+            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          {success && (
+            <Alert className="bg-green-50 text-green-500 border-green-200">
+              <CheckCircle2 className="h-4 w-4" />
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-purple-700">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={userEmail}
+              disabled
+              className="border-purple-200 bg-gray-50 text-purple-900"
+            />
+            <p className="text-sm text-purple-500">
+              Email cannot be changed
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="full_name" className="text-purple-700">
+              Full Name
+            </Label>
+            <Input
+              id="full_name"
+              name="full_name"
+              type="text"
+              value={formData.full_name}
+              onChange={handleChange}
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="avatar_url" className="text-purple-700">
+              Avatar URL
+            </Label>
+            <Input
+              id="avatar_url"
+              name="avatar_url"
+              type="text"
+              value={formData.avatar_url}
+              onChange={handleChange}
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+          </div>
+        </CardContent>
+        
+        <CardFooter>
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Update Profile'
+            )}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

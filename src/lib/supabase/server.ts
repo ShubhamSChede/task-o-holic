@@ -4,9 +4,9 @@ import { cookies } from 'next/headers';
 import { Database } from '@/types/supabase';
 import { cache } from 'react';
 
-export const createClient = cache(() => {
-  // Using the modern Next.js cookies API which should be synchronous
-  const cookieStore = cookies();
+export const createClient = cache(async () => {
+  // Use await since cookies() returns a Promise
+  const cookieStore = await cookies();
   
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,12 +17,20 @@ export const createClient = cache(() => {
           return cookieStore.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          // Directly set the cookie with name/value format instead of object
-          cookieStore.set(name, value, options as any);
+          try {
+            cookieStore.set(name, value, options as any);
+          } catch (error) {
+            // Ignore cookie setting errors in server components
+            console.error('Error setting cookie:', error);
+          }
         },
         remove(name: string, options: CookieOptions) {
-          // Empty value and maxAge=0 effectively removes the cookie
-          cookieStore.set(name, '', { ...options as any, maxAge: 0 });
+          try {
+            cookieStore.set(name, '', { ...options as any, maxAge: 0 });
+          } catch (error) {
+            // Ignore cookie removal errors in server components
+            console.error('Error removing cookie:', error);
+          }
         },
       },
     }

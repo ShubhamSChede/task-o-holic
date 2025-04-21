@@ -4,6 +4,33 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CalendarIcon, CheckIcon, Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type TodoFormProps = {
   initialData?: {
@@ -31,7 +58,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
-    due_date: initialData?.due_date ? new Date(initialData.due_date).toISOString().split('T')[0] : '',
+    due_date: initialData?.due_date ? new Date(initialData.due_date) : undefined,
     priority: initialData?.priority || '',
     tags: initialData?.tags?.join(', ') || '',
     organization_id: initialData?.organization_id || '',
@@ -79,14 +106,23 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
     loadTemplateData();
   }, [searchParams, supabase, mode]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: checked }));
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    setFormData((prev) => ({ ...prev, due_date: date }));
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData((prev) => ({ ...prev, is_complete: checked }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,7 +137,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
       const todoData = {
         title: formData.title,
         description: formData.description || null,
-        due_date: formData.due_date ? new Date(formData.due_date).toISOString() : null,
+        due_date: formData.due_date ? formData.due_date.toISOString() : null,
         priority: formData.priority || null,
         tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
         organization_id: formData.organization_id || null,
@@ -131,149 +167,182 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-purple-200 space-y-6">
-      {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded-md">
-          {error}
-        </div>
-      )}
+    <Card className="border-purple-200">
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-6 pt-6">
+          {error && (
+            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-purple-700 mb-2">
-          Title *
-        </label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          disabled={loading}
-        />
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-purple-700">
+              Title *
+            </Label>
+            <Input
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+          </div>
 
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-purple-700 mb-2">
-          Description
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          rows={3}
-          className="w-full px-4 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          disabled={loading}
-        ></textarea>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-purple-700">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={3}
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 resize-none"
+              disabled={loading}
+            />
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="due_date" className="block text-sm font-medium text-purple-700 mb-2">
-            Due Date
-          </label>
-          <input
-            id="due_date"
-            name="due_date"
-            type="date"
-            value={formData.due_date}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="due_date" className="text-purple-700">
+                Due Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    disabled={loading}
+                    className={cn(
+                      "w-full justify-start text-left font-normal border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800",
+                      !formData.due_date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.due_date ? (
+                      format(formData.due_date, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={formData.due_date}
+                    onSelect={handleDateChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="priority" className="text-purple-700">
+                Priority
+              </Label>
+              <Select
+                value={formData.priority || "none"}
+                onValueChange={(value) => handleSelectChange('priority', value === "none" ? "" : value)}
+                disabled={loading}
+              >
+                <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
+                  <SelectValue placeholder="-- Select Priority --" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">-- Select Priority --</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tags" className="text-purple-700">
+              Tags (comma-separated)
+            </Label>
+            <Input
+              id="tags"
+              name="tags"
+              value={formData.tags}
+              onChange={handleChange}
+              placeholder="work, personal, project"
+              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="organization_id" className="text-purple-700">
+              Organization
+            </Label>
+            <Select
+              value={formData.organization_id || "personal"}
+              onValueChange={(value) => handleSelectChange('organization_id', value === "personal" ? "" : value)}
+              disabled={loading}
+            >
+              <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
+                <SelectValue placeholder="-- Personal Task --" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="personal">-- Personal Task --</SelectItem>
+                {organizations.map((org) => (
+                  <SelectItem key={org.id} value={org.id}>
+                    {org.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_complete"
+              checked={formData.is_complete}
+              onCheckedChange={handleCheckboxChange}
+              disabled={loading}
+              className="text-purple-600 border-purple-300 focus:ring-purple-500"
+            />
+            <Label
+              htmlFor="is_complete"
+              className="text-sm text-purple-700 font-normal"
+            >
+              Mark as complete
+            </Label>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="flex justify-start space-x-4 px-6 pb-6">
+          <Button
+            type="submit"
             disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="priority" className="block text-sm font-medium text-purple-700 mb-2">
-            Priority
-          </label>
-          <select
-            id="priority"
-            name="priority"
-            value={formData.priority}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
           >
-            <option value="">-- Select Priority --</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="tags" className="block text-sm font-medium text-purple-700 mb-2">
-          Tags (comma-separated)
-        </label>
-        <input
-          id="tags"
-          name="tags"
-          type="text"
-          value={formData.tags}
-          onChange={handleChange}
-          placeholder="work, personal, project"
-          className="w-full px-4 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          disabled={loading}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="organization_id" className="block text-sm font-medium text-purple-700 mb-2">
-          Organization
-        </label>
-        <select
-          id="organization_id"
-          name="organization_id"
-          value={formData.organization_id}
-          onChange={handleChange}
-          className="w-full px-4 py-2 rounded-lg border border-purple-200 bg-white text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          disabled={loading}
-        >
-          <option value="">-- Personal Task --</option>
-          {organizations.map((org) => (
-            <option key={org.id} value={org.id}>
-              {org.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex items-center">
-        <input
-          id="is_complete"
-          name="is_complete"
-          type="checkbox"
-          checked={formData.is_complete}
-          onChange={handleCheckboxChange}
-          className="h-4 w-4 text-purple-600 rounded border-purple-200 focus:ring-purple-500"
-          disabled={loading}
-        />
-        <label htmlFor="is_complete" className="ml-2 text-sm text-purple-700">
-          Mark as complete
-        </label>
-      </div>
-
-      <div className="flex space-x-4">
-        <button
-          type="submit"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? 'Saving...' : mode === 'create' ? 'Create Task' : 'Update Task'}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
-          disabled={loading}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              mode === 'create' ? 'Create Task' : 'Update Task'
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={loading}
+            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
+          >
+            Cancel
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }
