@@ -48,7 +48,7 @@ type FrequentTask = {
 export default async function OrganizationPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -56,12 +56,15 @@ export default async function OrganizationPage({
   if (!session) {
     return null;
   }
+
+  // Await the params to get the id
+  const { id } = await params;
   
   // Check if user is a member of this organization
   const { data: membership, error: membershipError } = await supabase
     .from('organization_members')
     .select('id, role')
-    .eq('organization_id', params.id)
+    .eq('organization_id', id)
     .eq('user_id', session.user.id)
     .single();
   
@@ -73,7 +76,7 @@ export default async function OrganizationPage({
   const { data: organization, error: orgError } = await supabase
     .from('organizations')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
   
   if (orgError || !organization) {
@@ -81,10 +84,11 @@ export default async function OrganizationPage({
   }
   
   // Check if user is the creator
-  const isCreator = organization.created_by === session.user.id;
+  const isCreator = (organization as any).created_by === session.user.id;
   
   // Fetch organization members
-  const { data: members } = await supabase
+  console.log('Fetching members for organization:', id);
+  const { data: members, error: membersError } = await supabase
     .from('organization_members')
     .select(`
       id,
@@ -96,38 +100,48 @@ export default async function OrganizationPage({
         full_name
       )
     `)
-    .eq('organization_id', params.id)
+    .eq('organization_id', id)
     .order('joined_at');
   
+  console.log('Members query result:', { members, membersError });
+  
+  if (membersError) {
+    console.error('Error fetching members:', membersError);
+  }
+  
   // Fetch organization todos
-  const { data: todos } = await supabase
+  const { data: todos, error: todosError } = await supabase
     .from('todos')
     .select('*, profiles(full_name)')
-    .eq('organization_id', params.id)
+    .eq('organization_id', id)
     .order('created_at', { ascending: false });
+  
+  if (todosError) {
+    console.error('Error fetching todos:', todosError);
+  }
   
   // Fetch frequent tasks for this organization
   const { data: frequentTasks } = await supabase
     .from('frequent_tasks')
     .select('*')
-    .eq('organization_id', params.id)
+    .eq('organization_id', id)
     .order('created_at', { ascending: false });
   
   return (
     <div className="space-y-6 px-2 sm:px-0">
       {/* Header - Responsive layout for small screens */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-purple-800">{organization.name}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-purple-800">{(organization as any).name}</h1>
         <div className="flex flex-wrap gap-2">
           <Link 
-            href="/todo/create" 
-            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors"
+            href={`/todo/create?org=${id}`} 
+            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors mt-2"
           >
             Create Task
           </Link>
           {isCreator && (
             <Link 
-              href={`/organizations/${params.id}/edit`} 
+              href={`/organizations/${id}/edit`} 
               className="bg-white hover:bg-gray-50 text-purple-800 border border-purple-200 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors"
             >
               Edit Organization
@@ -138,10 +152,10 @@ export default async function OrganizationPage({
       
       {/* Organization Details */}
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-purple-200">
-        {organization.description && (
+        {(organization as any).description && (
           <div className="mb-4">
             <h2 className="text-lg font-medium mb-2 text-purple-800">Description</h2>
-            <p className="text-purple-600 text-sm sm:text-base">{organization.description}</p>
+            <p className="text-purple-600 text-sm sm:text-base">{(organization as any).description}</p>
           </div>
         )}
         
@@ -149,9 +163,9 @@ export default async function OrganizationPage({
           <div>
             <span className="text-sm text-purple-500">Created by:</span>{' '}
             <span className="font-medium text-purple-700">
-              {organization.created_by === session.user.id 
+              {(organization as any).created_by === session.user.id 
                 ? 'You' 
-                : members?.find((m: Member) => m.user_id === organization.created_by)?.profiles?.full_name || 'Unknown'}
+                : (members as any)?.find((m: any) => m.user_id === (organization as any).created_by)?.profiles?.full_name || 'Unknown'}
             </span>
           </div>
           <div>
@@ -174,7 +188,7 @@ export default async function OrganizationPage({
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-purple-200 flex justify-between items-center">
               <h2 className="font-medium text-base sm:text-lg text-purple-800">Organization Tasks</h2>
               <Link 
-                href="/todo/create" 
+                href={`/todo/create?org=${id}`} 
                 className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm"
               >
                 Add Task
@@ -208,7 +222,7 @@ export default async function OrganizationPage({
               <h2 className="font-medium text-base sm:text-lg text-purple-800">Frequent Tasks Templates</h2>
               {isCreator && (
                 <Link 
-                  href={`/frequent-tasks/create?org=${params.id}`} 
+                  href={`/frequent-tasks/create?org=${id}`} 
                   className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm"
                 >
                   Add Template
@@ -266,7 +280,7 @@ export default async function OrganizationPage({
         <div className="lg:col-span-1">
           <MembersList 
             members={members || []} 
-            organizationId={params.id}
+            organizationId={id}
             isCreator={isCreator}
             currentUserId={session.user.id}
           />

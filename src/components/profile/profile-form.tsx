@@ -21,6 +21,8 @@ import {
   CheckCircle2, 
   Loader2 
 } from "lucide-react";
+import AvatarSelector from './avatar-selector';
+import { useProfile } from '@/contexts/profile-context';
 
 type ProfileFormProps = {
   initialData: {
@@ -34,6 +36,7 @@ type ProfileFormProps = {
 export default function ProfileForm({ initialData, userEmail }: ProfileFormProps) {
   const router = useRouter();
   const supabase = createClient();
+  const { refreshProfile } = useProfile();
   
   const [formData, setFormData] = useState({
     full_name: initialData.full_name || '',
@@ -64,10 +67,12 @@ export default function ProfileForm({ initialData, userEmail }: ProfileFormProps
         })
         .eq('id', initialData.id);
       
-      if (updateError) throw updateError;
-      
-      setSuccess('Profile updated successfully');
-      router.refresh();
+          if (updateError) throw updateError;
+          
+          setSuccess('Profile updated successfully');
+          // Refresh profile data to update sidebar
+          await refreshProfile();
+          router.refresh();
     } catch (error: any) {
       setError(error.message || 'An error occurred');
     } finally {
@@ -128,23 +133,58 @@ export default function ProfileForm({ initialData, userEmail }: ProfileFormProps
             <Label htmlFor="avatar_url" className="text-purple-700">
               Avatar URL
             </Label>
-            <Input
-              id="avatar_url"
-              name="avatar_url"
-              type="text"
-              value={formData.avatar_url}
-              onChange={handleChange}
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
-              disabled={loading}
-            />
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0">
+                {formData.avatar_url ? (
+                  <img 
+                    src={formData.avatar_url} 
+                    alt="Avatar Preview" 
+                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-200"
+                    onError={(e) => {
+                      // Show fallback if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const fallback = target.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className={`w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium text-lg border-2 border-purple-200 ${formData.avatar_url ? 'hidden' : ''}`}
+                >
+                  {formData.full_name?.charAt(0) || userEmail.charAt(0) || '?'}
+                </div>
+              </div>
+              <div className="flex-1">
+                <Input
+                  id="avatar_url"
+                  name="avatar_url"
+                  type="url"
+                  value={formData.avatar_url}
+                  onChange={handleChange}
+                  placeholder="https://example.com/avatar.jpg"
+                  className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+                  disabled={loading}
+                />
+                <p className="text-xs text-purple-500 mt-1">
+                  Enter a valid image URL (JPG, PNG, GIF)
+                </p>
+              </div>
+            </div>
           </div>
+          
+          {/* Avatar Selector */}
+          <AvatarSelector
+            currentAvatar={formData.avatar_url}
+            onAvatarSelect={(avatarUrl) => setFormData(prev => ({ ...prev, avatar_url: avatarUrl }))}
+          />
         </CardContent>
         
         <CardFooter>
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
           >
             {loading ? (
               <>

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Loader from '@/components/Loader';
 
 type FrequentTaskItemProps = {
   task: {
@@ -52,7 +53,12 @@ export default function FrequentTaskItem({ task, onUseTemplate }: FrequentTaskIt
   };
   
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-200 hover:shadow-md transition-shadow">
+    <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-200 hover:shadow-md transition-shadow relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+          <Loader />
+        </div>
+      )}
       <h3 className="font-medium text-purple-900">
         {task.title}
       </h3>

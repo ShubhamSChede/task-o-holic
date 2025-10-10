@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Loader from '@/components/Loader';
 
 type MembersListProps = {
   members: {
@@ -26,6 +27,9 @@ export default function MembersList({ members, organizationId, isCreator, curren
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   
+  console.log('MembersList received members:', members);
+  console.log('MembersList props:', { organizationId, isCreator, currentUserId });
+  
   const handleRemoveMember = async (memberId: string, userId: string) => {
     if (!isCreator || userId === currentUserId) return;
     
@@ -33,11 +37,11 @@ export default function MembersList({ members, organizationId, isCreator, curren
     
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('organization_members')
-        .delete()
-        .eq('id', memberId)
-        .eq('organization_id', organizationId);
+    const { error } = await supabase
+      .from('organization_members')
+      .delete()
+      .eq('id', memberId as any)
+      .eq('organization_id', organizationId as any);
       
       if (error) throw error;
       router.refresh();
@@ -49,7 +53,12 @@ export default function MembersList({ members, organizationId, isCreator, curren
   };
   
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+          <Loader />
+        </div>
+      )}
       <div className="px-6 py-4 border-b border-purple-100">
         <h2 className="font-medium text-lg text-purple-800">Members ({members.length})</h2>
       </div>
@@ -59,7 +68,7 @@ export default function MembersList({ members, organizationId, isCreator, curren
           <li key={member.id} className="px-6 py-4 flex items-center justify-between">
             <div>
               <p className="font-medium text-purple-900">
-                {member.profiles.full_name || 'Unknown User'}
+                {member.profiles?.full_name || 'Unknown User'}
                 {member.user_id === currentUserId && ' (You)'}
               </p>
               <p className="text-sm text-purple-500">

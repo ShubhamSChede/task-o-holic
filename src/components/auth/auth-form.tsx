@@ -25,6 +25,7 @@ export default function AuthForm({ type }: AuthFormProps) {
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +41,13 @@ export default function AuthForm({ type }: AuthFormProps) {
             data: {
               full_name: fullName,
             },
+            emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
           },
         });
         
         if (error) throw error;
         
-        router.push('/login?message=Check your email to confirm your account');
+        setShowVerificationMessage(true);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -58,12 +60,75 @@ export default function AuthForm({ type }: AuthFormProps) {
         router.refresh();
       }
     } catch (error: any) {
-      setError(error.message || 'An error occurred');
+      console.error('Auth error:', error);
+      
+      // Provide more specific error messages
+      if (error.message?.includes('Failed to fetch')) {
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else if (error.message?.includes('Invalid email')) {
+        setError('Please enter a valid email address.');
+      } else if (error.message?.includes('Password should be at least')) {
+        setError('Password must be at least 6 characters long.');
+      } else if (error.message?.includes('User already registered')) {
+        setError('An account with this email already exists. Please sign in instead.');
+      } else if (error.message?.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please try again.');
+      } else {
+        setError(error.message || 'An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
   
+  // Show verification message after successful signup
+  if (showVerificationMessage) {
+    return (
+      <Card className="border-purple-200 shadow-sm max-w-md w-full mx-auto">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-3xl font-bold text-center text-purple-800">
+            Check Your Email
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-purple-800 mb-2">
+              Verification Email Sent!
+            </h3>
+            <p className="text-purple-600 mb-4">
+              We've sent a verification link to <strong>{email}</strong>
+            </p>
+            <p className="text-sm text-purple-500 mb-6">
+              Please check your email and click the verification link to activate your account.
+            </p>
+          </div>
+          
+          <div className="space-y-3">
+            <Button
+              onClick={() => setShowVerificationMessage(false)}
+              variant="outline"
+              className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
+            >
+              Back to Sign Up
+            </Button>
+            <Button
+              onClick={() => router.push('/login')}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              Go to Sign In
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="border-purple-200 shadow-sm max-w-md w-full mx-auto">
       <CardHeader className="space-y-1">
@@ -129,7 +194,7 @@ export default function AuthForm({ type }: AuthFormProps) {
           
           <Button
             type="submit"
-            className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white"
             disabled={loading}
           >
             {loading ? (

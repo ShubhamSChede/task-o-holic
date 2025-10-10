@@ -17,7 +17,7 @@ import {
   Alert, 
   AlertDescription 
 } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy, Check } from "lucide-react";
 
 type OrgFormProps = {
   mode: 'create';
@@ -45,10 +45,21 @@ export default function OrgForm(props: OrgFormProps) {
   
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCopyPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(formData.password);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy password:', err);
+    }
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -155,16 +166,40 @@ export default function OrgForm(props: OrgFormProps) {
             <Label htmlFor="password" className="text-purple-700">
               Password *
             </Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
-              disabled={loading}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 pr-10"
+                disabled={loading}
+              />
+              {formData.password && (
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                  <button
+                    type="button"
+                    onClick={handleCopyPassword}
+                    className="relative p-1 text-purple-500 hover:text-purple-700 transition-colors group"
+                    disabled={loading}
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                    
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                      {copied ? 'Copied!' : 'Copy password'}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
             <p className="mt-1 text-xs text-purple-500">
               Members will need this password to join the organization.
             </p>
@@ -175,7 +210,7 @@ export default function OrgForm(props: OrgFormProps) {
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
           >
             {loading ? (
               <>

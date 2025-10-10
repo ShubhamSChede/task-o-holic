@@ -60,14 +60,19 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Sidebar from '@/components/dashboard/sidebar';
+import { SidebarProvider, useSidebar } from '@/contexts/sidebar-context';
+import { ProfileProvider } from '@/contexts/profile-context';
+import Loader from '@/components/Loader';
+import ErrorBoundary from '@/components/ui/error-boundary';
 
-export default function DashboardLayout({
+function DashboardContent({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const { expanded } = useSidebar();
   const [isLoading, setIsLoading] = useState(true);
   interface Profile {
     id: string;
@@ -83,6 +88,28 @@ export default function DashboardLayout({
   }
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   
+  // Function to refresh profile data
+  const refreshProfile = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id as any)
+        .single();
+        
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+      } else if (profileData) {
+        setProfile(profileData as any);
+      }
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+    }
+  };
+  
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -94,16 +121,26 @@ export default function DashboardLayout({
         }
         
         // Fetch profile
-        const { data: profileData } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', session.user.id as any)
           .single();
           
-        setProfile(profileData);
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+        } else if (profileData) {
+          setProfile(profileData as any);
+          
+          // Check if user needs to select avatar
+          if (!(profileData as any).avatar_url) {
+            router.push('/avatar-selection');
+            return;
+          }
+        }
         
         // Fetch organizations
-        const { data: orgsData } = await supabase
+        const { data: orgsData, error: orgsError } = await supabase
           .from('organization_members')
           .select(`
             organization_id,
@@ -113,10 +150,12 @@ export default function DashboardLayout({
               name
             )
           `)
-          .eq('user_id', session.user.id);
+          .eq('user_id', session.user.id as any);
           
-        if (orgsData) {
-          setOrganizations(orgsData.map(org => ({
+        if (orgsError) {
+          console.error('Error fetching organizations:', orgsError);
+        } else if (orgsData) {
+          setOrganizations(orgsData.map((org: any) => ({
             id: org.organization_id,
             name: org.organizations?.name || '',
             role: org.role
@@ -134,18 +173,46 @@ export default function DashboardLayout({
   }, [router, supabase]);
   
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <Loader />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar 
-        user={profile} 
-        organizations={organizations} 
-      />
-      <main className="flex-1 p-6 overflow-auto">
+    <ProfileProvider refreshProfile={refreshProfile}>
+      <div className="min-h-screen bg-gray-50">
+        <Sidebar 
+          user={profile} 
+          organizations={organizations} 
+        />
+        <main 
+          className={`p-6 overflow-auto min-h-screen transition-all duration-300 ${
+            expanded ? 'ml-64' : 'ml-20'
+          }`}
+        >
+          <div className="max-w-7xl mx-auto">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </div>
+        </main>
+      </div>
+    </ProfileProvider>
+  );
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <SidebarProvider>
+      <DashboardContent>
         {children}
-      </main>
-    </div>
+      </DashboardContent>
+    </SidebarProvider>
   );
 }

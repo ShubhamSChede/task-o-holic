@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { ChevronRight, ChevronLeft, LayoutDashboard, CheckSquare, Building, LineChart, User, Repeat, LogOut, Menu } from "lucide-react";
+import { useSidebar } from '@/contexts/sidebar-context';
 
 type SidebarProps = {
   user: any;
@@ -23,7 +23,7 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  const [expanded, setExpanded] = useState(true);
+  const { expanded, setExpanded } = useSidebar();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -44,21 +44,32 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
   const DesktopSidebar = () => (
     <div 
       className={cn(
-        "bg-white border-r border-purple-200 h-screen flex flex-col transition-all duration-300",
+        "bg-white border-r border-purple-200 h-screen flex flex-col transition-all duration-300 fixed left-0 top-0 z-50",
         expanded ? "w-64" : "w-20"
       )}
+      style={{
+        '--sidebar-width': expanded ? '16rem' : '5rem'
+      } as React.CSSProperties}
     >
       <div className="p-4 border-b border-purple-100 flex items-center justify-between">
-        {expanded ? (
-          <h1 className="font-bold text-xl text-purple-800">TASK-O-HOLIC</h1>
-        ) : (
-          <h1 className="font-bold text-xl text-purple-800">📋</h1>
-        )}
+        <div className="flex items-center min-w-0 flex-1">
+          <img 
+            src="/logo.png" 
+            alt="Task-O-Holic Logo" 
+            className={cn(
+              "object-contain flex-shrink-0",
+              expanded ? "h-6 w-auto" : "h-6 w-6"
+            )}
+          />
+          {expanded && (
+            <h1 className="ml-2 font-bold text-lg text-purple-800 truncate">TASK-O-HOLIC</h1>
+          )}
+        </div>
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={() => setExpanded(!expanded)}
-          className="text-purple-500 hover:text-purple-700"
+          className="text-purple-500 hover:text-purple-700 flex-shrink-0"
         >
           {expanded ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
         </Button>
@@ -111,11 +122,27 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
       <Separator className="my-2" />
       <div className="p-4">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium">
+          {user?.avatar_url ? (
+            <img 
+              src={user.avatar_url} 
+              alt="Avatar" 
+              className="w-8 h-8 rounded-full object-cover"
+              onError={(e) => {
+                // Fallback to initials if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = target.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div 
+            className={`w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium ${user?.avatar_url ? 'hidden' : ''}`}
+          >
             {user?.full_name?.charAt(0) || user?.email?.charAt(0) || '?'}
           </div>
           {expanded && (
-            <div className="ml-3 overflow-hidden">
+            <div className="ml-3 overflow-hidden flex-1">
               <p className="text-sm font-medium text-purple-900 truncate">
                 {user?.full_name || 'User'}
               </p>
@@ -144,8 +171,14 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="p-0 w-72">
-        <div className="p-4 border-b border-purple-100">
-          <h1 className="font-bold text-xl text-purple-800">TASK-O-HOLIC</h1>
+        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+        <div className="p-4 border-b border-purple-100 flex items-center">
+          <img 
+            src="/logo.png" 
+            alt="Task-O-Holic Logo" 
+            className="h-6 w-auto object-contain flex-shrink-0"
+          />
+          <h1 className="ml-2 font-bold text-lg text-purple-800 truncate">TASK-O-HOLIC</h1>
         </div>
         <div className="py-4">
           <nav className="px-2 space-y-1">
@@ -195,10 +228,26 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
         <Separator />
         <div className="p-4">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium">
+            {user?.avatar_url ? (
+              <img 
+                src={user.avatar_url} 
+                alt="Avatar" 
+                className="w-8 h-8 rounded-full object-cover"
+                onError={(e) => {
+                  // Fallback to initials if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div 
+              className={`w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium ${user?.avatar_url ? 'hidden' : ''}`}
+            >
               {user?.full_name?.charAt(0) || user?.email?.charAt(0) || '?'}
             </div>
-            <div className="ml-3 overflow-hidden">
+            <div className="ml-3 overflow-hidden flex-1">
               <p className="text-sm font-medium text-purple-900 truncate">
                 {user?.full_name || 'User'}
               </p>

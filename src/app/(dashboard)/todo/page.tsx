@@ -3,13 +3,15 @@
 
 import TodoItem from '@/components/todo/todo-item';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { fetchFromSupabase } from '@/lib/supabase/client-fetcher';
+import Loader from '@/components/Loader';
+import ErrorDisplay from '@/components/ui/error-display';
 
 export default function TodosPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const [todos, setTodos] = useState<any[]>([]);
   const [uniqueTags, setUniqueTags] = useState<Set<string>>(new Set());
@@ -17,10 +19,13 @@ export default function TodosPage({
   const [session, setSession] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Unwrap searchParams using React.use()
+  const params = use(searchParams);
+  
   // Get filter parameters
-  const status = typeof searchParams.status === 'string' ? searchParams.status : undefined;
-  const priority = typeof searchParams.priority === 'string' ? searchParams.priority : undefined;
-  const tag = typeof searchParams.tag === 'string' ? searchParams.tag : undefined;
+  const status = typeof params.status === 'string' ? params.status : undefined;
+  const priority = typeof params.priority === 'string' ? params.priority : undefined;
+  const tag = typeof params.tag === 'string' ? params.tag : undefined;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,12 +75,22 @@ export default function TodosPage({
     };
 
     fetchData();
-  }, [searchParams, status, priority, tag]);
+  }, [params, status, priority, tag]);
+
+  const handleRetry = () => {
+    setError(null);
+    setIsLoading(true);
+    // The useEffect will automatically retry when isLoading changes
+  };
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 text-center">
-        {error}
+      <div className="max-w-2xl mx-auto">
+        <ErrorDisplay 
+          error={error}
+          onRetry={handleRetry}
+          title="Failed to load tasks"
+        />
       </div>
     );
   }
@@ -101,7 +116,7 @@ export default function TodosPage({
         <h1 className="text-xl sm:text-2xl font-bold text-purple-800">My Tasks</h1>
         <Link 
           href="/todo/create" 
-          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors w-full sm:w-auto text-center"
+          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors w-full sm:w-auto text-center mt-2"
         >
           Create Task
         </Link>
@@ -169,8 +184,7 @@ export default function TodosPage({
       {/* Loading Indicator */}
       {isLoading ? (
         <div className="text-center py-8 bg-white rounded-xl shadow-sm border border-purple-200">
-          <p className="text-purple-500">Loading tasks...</p>
-          <div className="mt-2 mx-auto w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+          <Loader />
         </div>
       ) : (
         <>

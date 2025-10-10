@@ -45,7 +45,7 @@ export default function LandingPage() {
           transition={{ delay: 0.6, duration: 0.6 }}
         >
           <Link href="/login">
-            <button className="px-6 py-3 text-white font-medium bg-purple-600 hover:bg-purple-700 rounded-xl shadow-md transition-all duration-300">
+            <button className="px-6 py-3 text-white font-medium bg-purple-600 hover:bg-purple-700 rounded-xl shadow-md transition-all duration-300 mt-4">
               Get Started
             </button>
           </Link>

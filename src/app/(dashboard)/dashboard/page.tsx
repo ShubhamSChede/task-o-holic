@@ -64,7 +64,7 @@ export default async function Dashboard() {
         <h1 className="text-2xl sm:text-3xl font-bold text-purple-800">Dashboard</h1>
         <Link
           href="/todo/create"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition w-full sm:w-auto text-center"
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition w-full sm:w-auto text-center mt-2"
         >
           Create Task
         </Link>

@@ -10,7 +10,11 @@ type OrgMember = {
   };
 };
 
-export default async function CreateTodoPage() {
+export default async function CreateTodoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   // Add 'await' to fix Promise error
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -19,22 +23,41 @@ export default async function CreateTodoPage() {
     return null;
   }
   
-  // Fetch user's organizations
-  const { data: userOrganizations } = await supabase
-    .from('organization_members')
-    .select(`
-      organizations (
-        id,
-        name
-      )
-    `)
-    .eq('user_id', session.user.id);
+  // Get the org parameter from URL
+  const params = await searchParams;
+  const orgId = typeof params.org === 'string' ? params.org : undefined;
   
-  // Add type annotation to 'org' parameter
-  const organizations = userOrganizations?.map((org: OrgMember) => ({
-    id: org.organizations?.id || '',
-    name: org.organizations?.name || '',
-  })) || [];
+  let organizations: { id: string; name: string }[] = [];
+  
+  if (orgId) {
+    // If org parameter is provided, fetch only that specific organization
+    const { data: specificOrg } = await supabase
+      .from('organizations')
+      .select('id, name')
+      .eq('id', orgId)
+      .single();
+    
+    if (specificOrg) {
+      organizations = [specificOrg];
+    }
+  } else {
+    // If no org parameter, fetch all user's organizations
+    const { data: userOrganizations } = await supabase
+      .from('organization_members')
+      .select(`
+        organizations (
+          id,
+          name
+        )
+      `)
+      .eq('user_id', session.user.id);
+    
+    // Add type annotation to 'org' parameter
+    organizations = userOrganizations?.map((org: OrgMember) => ({
+      id: org.organizations?.id || '',
+      name: org.organizations?.name || '',
+    })) || [];
+  }
   
   return (
     <div className="max-w-2xl mx-auto">

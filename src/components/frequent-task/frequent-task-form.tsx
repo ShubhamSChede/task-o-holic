@@ -228,7 +228,7 @@ export default function FrequentTaskForm({
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
           >
             {loading ? (
               <>

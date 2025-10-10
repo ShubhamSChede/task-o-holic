@@ -76,10 +76,11 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Check for template parameter when the component mounts
+  // Check for template and organization parameters when the component mounts
   useEffect(() => {
     const loadTemplateData = async () => {
       const templateId = searchParams.get('template');
+      const orgId = searchParams.get('org');
       
       if (templateId && mode === 'create') {
         setLoading(true);
@@ -108,11 +109,20 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
         } finally {
           setLoading(false);
         }
+      } else if (orgId && mode === 'create') {
+        // Pre-select organization if org parameter is provided
+        setFormData(prev => ({
+          ...prev,
+          organization_id: orgId,
+        }));
       }
     };
     
     loadTemplateData();
   }, [searchParams, supabase, mode]);
+
+  // Check if we're in organization-specific mode (has org parameter)
+  const isOrgSpecific = searchParams.get('org') !== null;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -289,15 +299,15 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
               Organization
             </Label>
             <Select
-              value={formData.organization_id || "personal"}
+              value={formData.organization_id || (isOrgSpecific && organizations.length === 1 ? organizations[0].id : "personal")}
               onValueChange={(value) => handleSelectChange('organization_id', value === "personal" ? "" : value)}
               disabled={loading}
             >
               <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
-                <SelectValue placeholder="-- Personal Task --" />
+                <SelectValue placeholder={isOrgSpecific && organizations.length === 1 ? organizations[0].name : "-- Personal Task --"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="personal">-- Personal Task --</SelectItem>
+                {!isOrgSpecific && <SelectItem value="personal">-- Personal Task --</SelectItem>}
                 {organizations.map((org) => (
                   <SelectItem key={org.id} value={org.id}>
                     {org.name}
@@ -328,7 +338,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
           >
             {loading ? (
               <>

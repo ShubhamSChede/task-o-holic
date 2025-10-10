@@ -45,18 +45,18 @@ export default function OrgJoinForm() {
       if (!userData.user) throw new Error('User not authenticated');
       
       // Find organization by name and password
-      const { data: org, error: orgError } = await supabase
+      const { data: orgs, error: orgError } = await supabase
         .from('organizations')
         .select('id, name, password')
-        .eq('name', formData.name)
-        .single();
+        .eq('name', formData.name as any);
       
-      if (orgError) {
-        if (orgError.code === 'PGRST116') {
-          throw new Error('Organization not found');
-        }
-        throw orgError;
+      if (orgError) throw orgError;
+      
+      if (!orgs || orgs.length === 0) {
+        throw new Error('Organization not found');
       }
+      
+      const org = orgs[0] as any;
       
       // Verify password
       if (org.password !== formData.password) {
@@ -64,14 +64,15 @@ export default function OrgJoinForm() {
       }
       
       // Check if user is already a member
-      const { data: existingMember } = await supabase
+      const { data: existingMembers, error: memberError } = await supabase
         .from('organization_members')
         .select('id')
-        .eq('organization_id', org.id)
-        .eq('user_id', userData.user.id)
-        .single();
+        .eq('organization_id', org.id as any)
+        .eq('user_id', userData.user.id as any);
       
-      if (existingMember) {
+      if (memberError) throw memberError;
+      
+      if (existingMembers && existingMembers.length > 0) {
         throw new Error('You are already a member of this organization');
       }
       
@@ -79,10 +80,10 @@ export default function OrgJoinForm() {
       const { error: joinError } = await supabase
         .from('organization_members')
         .insert({
-          organization_id: org.id,
-          user_id: userData.user.id,
+          organization_id: org.id as any,
+          user_id: userData.user.id as any,
           role: 'member',
-        });
+        } as any);
       
       if (joinError) throw joinError;
       
@@ -142,7 +143,7 @@ export default function OrgJoinForm() {
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
           >
             {loading ? (
               <>

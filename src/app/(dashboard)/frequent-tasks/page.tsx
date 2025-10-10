@@ -75,7 +75,7 @@ export default async function FrequentTasksPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-purple-800">Frequent Task Templates</h1>
-        <Link href="/frequent-tasks/create" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+        <Link href="/frequent-tasks/create" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition-colors mt-2">
           Create Template
         </Link>
       </div>

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
+import Loader from '@/components/Loader';
 
 type TodoItemProps = {
   todo: {
@@ -72,7 +73,12 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
   };
   
   return (
-    <div className="bg-white p-4 sm:p-5 md:p-6 rounded-xl shadow-sm border border-purple-200 hover:shadow-md transition-all duration-200">
+    <div className="bg-white p-4 sm:p-5 md:p-6 rounded-xl shadow-sm border border-purple-200 hover:shadow-md transition-all duration-200 relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+          <Loader />
+        </div>
+      )}
       {/* Header with Checkbox, Title and Priority - Responsive Layout */}
       <div className="flex items-start sm:items-center mb-3 sm:mb-4">
         <div className="flex-shrink-0 mt-1 sm:mt-0">
