@@ -16,6 +16,13 @@ type TodoWithOrg = Todo & {
   } | null;
 };
 
+type SupabaseSession = {
+  user: {
+    id: string;
+    email?: string | null;
+  };
+};
+
 export default function TodosPage({
   searchParams,
 }: {
@@ -24,7 +31,7 @@ export default function TodosPage({
   const [todos, setTodos] = useState<TodoWithOrg[]>([]);
   const [uniqueTags, setUniqueTags] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<SupabaseSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Unwrap searchParams using React.use()

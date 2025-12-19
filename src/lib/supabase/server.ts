@@ -18,7 +18,11 @@ export const createClient = cache(async () => {
         },
         set(name: string, value: string, options: CookieOptions) {
           try {
-            cookieStore.set(name, value, options as any);
+            cookieStore.set(
+              name,
+              value,
+              options as unknown as Parameters<typeof cookieStore.set>[2],
+            );
           } catch (error) {
             // Ignore cookie setting errors in server components
             console.error('Error setting cookie:', error);
@@ -26,7 +30,14 @@ export const createClient = cache(async () => {
         },
         remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set(name, '', { ...options as any, maxAge: 0 });
+            cookieStore.set(
+              name,
+              '',
+              {
+                ...(options as unknown as Parameters<typeof cookieStore.set>[2]),
+                maxAge: 0,
+              },
+            );
           } catch (error) {
             // Ignore cookie removal errors in server components
             console.error('Error removing cookie:', error);

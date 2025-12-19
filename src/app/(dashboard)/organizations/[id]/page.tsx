@@ -4,14 +4,21 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MembersList from '@/components/organization/members-list';
 import TodoItem from '@/components/todo/todo-item';
-import type { Todo, FrequentTask } from '@/types/supabase';
+import type { Todo, FrequentTask, Organization, OrganizationMember } from '@/types/supabase';
 
 
 
 type TodoWithProfile = Todo & {
   profiles?: {
     full_name: string | null;
-  };
+  } | null;
+};
+
+type MemberWithProfile = OrganizationMember & {
+  profiles?: {
+    id: string;
+    full_name: string | null;
+  } | null;
 };
 
 export default async function OrganizationPage({
@@ -51,9 +58,11 @@ export default async function OrganizationPage({
   if (orgError || !organization) {
     notFound();
   }
+
+  const org = organization as Organization;
   
   // Check if user is the creator
-  const isCreator = (organization as any).created_by === session.user.id;
+  const isCreator = org.created_by === session.user.id;
   
   // Fetch organization members
   console.log('Fetching members for organization:', id);
@@ -100,7 +109,7 @@ export default async function OrganizationPage({
     <div className="space-y-6 px-2 sm:px-0">
       {/* Header - Responsive layout for small screens */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-purple-800">{(organization as any).name}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-purple-800">{org.name}</h1>
         <div className="flex flex-wrap gap-2">
           <Link 
             href={`/todo/create?org=${id}`} 
@@ -121,10 +130,10 @@ export default async function OrganizationPage({
       
       {/* Organization Details */}
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-purple-200">
-        {(organization as any).description && (
+        {org.description && (
           <div className="mb-4">
             <h2 className="text-lg font-medium mb-2 text-purple-800">Description</h2>
-            <p className="text-purple-600 text-sm sm:text-base">{(organization as any).description}</p>
+            <p className="text-purple-600 text-sm sm:text-base">{org.description}</p>
           </div>
         )}
         
@@ -132,9 +141,11 @@ export default async function OrganizationPage({
           <div>
             <span className="text-sm text-purple-500">Created by:</span>{' '}
             <span className="font-medium text-purple-700">
-              {(organization as any).created_by === session.user.id 
+              {org.created_by === session.user.id 
                 ? 'You' 
-                : (members as any)?.find((m: any) => m.user_id === (organization as any).created_by)?.profiles?.full_name || 'Unknown'}
+                : ((members || []) as MemberWithProfile[]).find(
+                    (m) => m.user_id === org.created_by,
+                  )?.profiles?.full_name || 'Unknown'}
             </span>
           </div>
           <div>

@@ -59,22 +59,24 @@ export default function AuthForm({ type }: AuthFormProps) {
         router.push('/dashboard');
         router.refresh();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Auth error:', error);
       
+      const message = error instanceof Error ? error.message : '';
+
       // Provide more specific error messages
-      if (error.message?.includes('Failed to fetch')) {
+      if (message.includes('Failed to fetch')) {
         setError('Unable to connect to the server. Please check your internet connection and try again.');
-      } else if (error.message?.includes('Invalid email')) {
+      } else if (message.includes('Invalid email')) {
         setError('Please enter a valid email address.');
-      } else if (error.message?.includes('Password should be at least')) {
+      } else if (message.includes('Password should be at least')) {
         setError('Password must be at least 6 characters long.');
-      } else if (error.message?.includes('User already registered')) {
+      } else if (message.includes('User already registered')) {
         setError('An account with this email already exists. Please sign in instead.');
-      } else if (error.message?.includes('Invalid login credentials')) {
+      } else if (message.includes('Invalid login credentials')) {
         setError('Invalid email or password. Please try again.');
       } else {
-        setError(error.message || 'An error occurred. Please try again.');
+        setError(message || 'An error occurred. Please try again.');
       }
     } finally {
       setLoading(false);

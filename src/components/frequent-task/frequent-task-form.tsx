@@ -84,7 +84,7 @@ export default function FrequentTaskForm({
       const { data: org, error: orgError } = await supabase
         .from('organizations')
         .select('created_by')
-        // @ts-ignore - Supabase type inference issue with .eq()
+        // @ts-expect-error - Supabase type inference issue with .eq()
         .eq('id', formData.organization_id)
         .single();
       
@@ -105,7 +105,7 @@ export default function FrequentTaskForm({
         
         const { error: createError } = await supabase
           .from('frequent_tasks')
-          // @ts-ignore - Supabase type inference issue with .insert()
+          // @ts-expect-error - Supabase type inference issue with .insert()
           .insert(taskData);
         
         if (createError) throw createError;
@@ -119,9 +119,9 @@ export default function FrequentTaskForm({
         
         const { error: updateError } = await supabase
           .from('frequent_tasks')
-          // @ts-ignore - Supabase type inference issue with .update()
+          // @ts-expect-error - Supabase type inference issue with .update()
           .update(taskData)
-          // @ts-ignore - Supabase type inference issue with .eq()
+          // @ts-expect-error - Supabase type inference issue with .eq()
           .eq('id', initialData.id);
         
         if (updateError) throw updateError;
@@ -129,8 +129,9 @@ export default function FrequentTaskForm({
       
       router.push(`/organizations/${formData.organization_id}`);
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || 'An error occurred');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred';
+      setError(message);
     } finally {
       setLoading(false);
     }

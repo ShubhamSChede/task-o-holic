@@ -10,8 +10,15 @@ import { Separator } from "@/components/ui/separator";
 import { ChevronRight, ChevronLeft, LayoutDashboard, CheckSquare, Building, LineChart, User, Repeat, LogOut, Menu } from "lucide-react";
 import { useSidebar } from '@/contexts/sidebar-context';
 
+type SidebarUser = {
+  id?: string;
+  full_name?: string | null;
+  email?: string | null;
+  avatar_url?: string | null;
+};
+
 type SidebarProps = {
-  user: any;
+  user: SidebarUser | null;
   organizations: {
     id: string;
     name: string;

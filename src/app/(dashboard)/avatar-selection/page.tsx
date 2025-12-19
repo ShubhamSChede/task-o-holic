@@ -30,10 +30,13 @@ export default function AvatarSelectionPage() {
   const router = useRouter();
   const supabase = createClient();
   const { refreshProfile } = useProfile();
+  type SupabaseUser = {
+    id: string;
+  };
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const AVATARS_PER_PAGE = 6;
@@ -62,7 +65,9 @@ export default function AvatarSelectionPage() {
       const updateData: { avatar_url: string } = { avatar_url: selectedAvatar };
       const { error } = await supabase
         .from('profiles')
-        .update(updateData as any)
+        // @ts-expect-error - Supabase type inference issue with .update()
+        .update(updateData)
+        // @ts-expect-error - Supabase type inference issue with .eq()
         .eq('id', user.id);
 
           if (error) throw error;

@@ -97,13 +97,14 @@ function DashboardContent({
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', session.user.id as any)
+        // @ts-expect-error - Supabase type inference issue with .eq()
+        .eq('id', session.user.id)
         .single();
         
       if (profileError) {
         console.error('Error fetching profile:', profileError);
       } else if (profileData) {
-        setProfile(profileData as any);
+        setProfile(profileData as unknown as Profile);
       }
     } catch (error) {
       console.error('Error refreshing profile:', error);
@@ -124,16 +125,18 @@ function DashboardContent({
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', session.user.id as any)
+          // @ts-expect-error - Supabase type inference issue with .eq()
+          .eq('id', session.user.id)
           .single();
           
         if (profileError) {
           console.error('Error fetching profile:', profileError);
         } else if (profileData) {
-          setProfile(profileData as any);
+          const typedProfile = profileData as unknown as Profile;
+          setProfile(typedProfile);
           
           // Check if user needs to select avatar
-          if (!(profileData as any).avatar_url) {
+          if (!typedProfile.avatar_url) {
             router.push('/avatar-selection');
             return;
           }
@@ -150,16 +153,30 @@ function DashboardContent({
               name
             )
           `)
-          .eq('user_id', session.user.id as any);
+          // @ts-expect-error - Supabase type inference issue with .eq()
+          .eq('user_id', session.user.id);
           
         if (orgsError) {
           console.error('Error fetching organizations:', orgsError);
         } else if (orgsData) {
-          setOrganizations(orgsData.map((org: any) => ({
-            id: org.organization_id,
-            name: org.organizations?.name || '',
-            role: org.role
-          })));
+          type OrgMemberWithOrg = {
+            organization_id: string;
+            role: string;
+            organizations?: {
+              id: string;
+              name: string;
+            } | null;
+          };
+
+          const typedOrgs = (orgsData || []) as unknown as OrgMemberWithOrg[];
+
+          setOrganizations(
+            typedOrgs.map((org) => ({
+              id: org.organization_id,
+              name: org.organizations?.name || '',
+              role: org.role,
+            })),
+          );
         }
       } catch (error) {
         console.error('Error checking auth:', error);

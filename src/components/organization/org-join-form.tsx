@@ -48,7 +48,7 @@ export default function OrgJoinForm() {
       const { data: orgs, error: orgError } = await supabase
         .from('organizations')
         .select('id, name, password')
-        .eq('name', formData.name as any);
+        .eq('name', formData.name);
       
       if (orgError) throw orgError;
       
@@ -56,7 +56,13 @@ export default function OrgJoinForm() {
         throw new Error('Organization not found');
       }
       
-      const org = orgs[0] as any;
+      type OrgRecord = {
+        id: string;
+        name: string;
+        password: string;
+      };
+
+      const org = orgs[0] as OrgRecord;
       
       // Verify password
       if (org.password !== formData.password) {
@@ -67,8 +73,8 @@ export default function OrgJoinForm() {
       const { data: existingMembers, error: memberError } = await supabase
         .from('organization_members')
         .select('id')
-        .eq('organization_id', org.id as any)
-        .eq('user_id', userData.user.id as any);
+        .eq('organization_id', org.id)
+        .eq('user_id', userData.user.id);
       
       if (memberError) throw memberError;
       
@@ -80,17 +86,18 @@ export default function OrgJoinForm() {
       const { error: joinError } = await supabase
         .from('organization_members')
         .insert({
-          organization_id: org.id as any,
-          user_id: userData.user.id as any,
+          organization_id: org.id,
+          user_id: userData.user.id,
           role: 'member',
-        } as any);
+        });
       
       if (joinError) throw joinError;
       
       router.push(`/organizations/${org.id}`);
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || 'An error occurred');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred';
+      setError(message);
     } finally {
       setLoading(false);
     }

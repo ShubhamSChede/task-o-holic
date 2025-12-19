@@ -114,8 +114,9 @@ export default function OrgForm(props: OrgFormProps) {
       }
       
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || 'An error occurred');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred';
+      setError(message);
     } finally {
       setLoading(false);
     }

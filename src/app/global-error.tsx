@@ -31,7 +31,7 @@ export default function GlobalError({
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-gray-600">
-            An unexpected error occurred. Don't worry, we've been notified and are working to fix it.
+            An unexpected error occurred. Don&apos;t worry, we&apos;ve been notified and are working to fix it.
           </p>
           
           {process.env.NODE_ENV === 'development' && (
