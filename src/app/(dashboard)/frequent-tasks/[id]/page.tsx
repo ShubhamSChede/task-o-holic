@@ -14,9 +14,8 @@ type TaskWithOrg = FrequentTask & {
 export default async function EditFrequentTaskPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  // Add 'await' here to properly resolve the Promise
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
@@ -24,11 +23,14 @@ export default async function EditFrequentTaskPage({
     return null;
   }
   
+  // Await the params to get the id
+  const { id } = await params;
+  
   // Fetch the frequent task
   const { data: task, error } = await supabase
     .from('frequent_tasks')
     .select('*, organizations(created_by)')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
   
   if (error || !task) {
