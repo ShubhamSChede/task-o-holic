@@ -4,45 +4,14 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MembersList from '@/components/organization/members-list';
 import TodoItem from '@/components/todo/todo-item';
+import type { Todo, FrequentTask } from '@/types/supabase';
 
-// Define types for better type safety
-type Member = {
-  id: string;
-  user_id: string;
-  role: string;
-  joined_at: string;
-  profiles?: {
-    id: string;
-    full_name: string | null;
-  };
-};
 
-type Todo = {
-  id: string;
-  title: string;
-  description: string | null;
-  created_by: string;
-  priority: string | null;
-  is_complete: boolean;
-  due_date: string | null;
-  tags: string[] | null;
-  organization_id: string | null;
-  created_at: string;
-  updated_at: string;
+
+type TodoWithProfile = Todo & {
   profiles?: {
     full_name: string | null;
   };
-};
-
-type FrequentTask = {
-  id: string;
-  title: string;
-  description: string | null;
-  priority: string | null;
-  tags: string[] | null;
-  organization_id: string;
-  created_at: string;
-  created_by: string;
 };
 
 export default async function OrganizationPage({
@@ -197,7 +166,7 @@ export default async function OrganizationPage({
             
             {todos && todos.length > 0 ? (
               <div className="p-3 sm:p-4 grid gap-3 sm:gap-4">
-                {todos.map((todo: Todo) => (
+                {todos.map((todo: TodoWithProfile) => (
                   <div key={todo.id} className="border border-purple-100 rounded-md p-3 sm:p-4">
                     <TodoItem
                       todo={todo}

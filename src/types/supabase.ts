@@ -7,6 +7,27 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+// Helper types for easier usage throughout the project
+export type Profile = Database['public']['Tables']['profiles']['Row']
+export type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
+export type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
+
+export type Organization = Database['public']['Tables']['organizations']['Row']
+export type OrganizationInsert = Database['public']['Tables']['organizations']['Insert']
+export type OrganizationUpdate = Database['public']['Tables']['organizations']['Update']
+
+export type OrganizationMember = Database['public']['Tables']['organization_members']['Row']
+export type OrganizationMemberInsert = Database['public']['Tables']['organization_members']['Insert']
+export type OrganizationMemberUpdate = Database['public']['Tables']['organization_members']['Update']
+
+export type Todo = Database['public']['Tables']['todos']['Row']
+export type TodoInsert = Database['public']['Tables']['todos']['Insert']
+export type TodoUpdate = Database['public']['Tables']['todos']['Update']
+
+export type FrequentTask = Database['public']['Tables']['frequent_tasks']['Row']
+export type FrequentTaskInsert = Database['public']['Tables']['frequent_tasks']['Insert']
+export type FrequentTaskUpdate = Database['public']['Tables']['frequent_tasks']['Update']
+
 export interface Database {
   public: {
     Tables: {

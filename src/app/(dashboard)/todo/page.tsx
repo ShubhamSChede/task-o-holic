@@ -7,13 +7,21 @@ import { useEffect, useState, use } from 'react';
 import { fetchFromSupabase } from '@/lib/supabase/client-fetcher';
 import Loader from '@/components/Loader';
 import ErrorDisplay from '@/components/ui/error-display';
+import type { Todo } from '@/types/supabase';
+
+// Type for Todo with organizations relation
+type TodoWithOrg = Todo & {
+  organizations?: {
+    name: string;
+  } | null;
+};
 
 export default function TodosPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [todos, setTodos] = useState<any[]>([]);
+  const [todos, setTodos] = useState<TodoWithOrg[]>([]);
   const [uniqueTags, setUniqueTags] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<any>(null);
@@ -55,11 +63,13 @@ export default function TodosPage({
           return;
         }
 
-        setTodos(todosData || []);
+        // Type assertion: TypeScript doesn't properly infer the type from Supabase query
+        const typedTodos = (todosData || []) as unknown as TodoWithOrg[];
+        setTodos(typedTodos);
 
         // Get all unique tags for filter dropdown
         const tags = new Set<string>();
-        todosData?.forEach(todo => {
+        typedTodos.forEach(todo => {
           if (todo.tags) {
             todo.tags.forEach((tag: string) => tags.add(tag));
           }

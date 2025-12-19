@@ -1,0 +1,212 @@
+[
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "title",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "priority",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "tags",
+    "data_type": "ARRAY"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "organization_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "created_by",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "frequent_tasks",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organization_members",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organization_members",
+    "column_name": "organization_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organization_members",
+    "column_name": "user_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organization_members",
+    "column_name": "role",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organization_members",
+    "column_name": "joined_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organizations",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organizations",
+    "column_name": "name",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organizations",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organizations",
+    "column_name": "password",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organizations",
+    "column_name": "created_by",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "organizations",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "column_name": "full_name",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "column_name": "avatar_url",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "title",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "is_complete",
+    "data_type": "boolean"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "due_date",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "priority",
+    "data_type": "text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "tags",
+    "data_type": "ARRAY"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "created_by",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "organization_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "todos",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  }
+]

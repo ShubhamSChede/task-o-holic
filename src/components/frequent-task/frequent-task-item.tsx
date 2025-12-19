@@ -6,17 +6,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Loader from '@/components/Loader';
+import type { FrequentTask } from '@/types/supabase';
 
 type FrequentTaskItemProps = {
-  task: {
-    id: string;
-    title: string;
-    description: string | null;
-    priority: string | null;
-    tags: string[] | null;
-    organization_id: string;
-  };
-  onUseTemplate?: (task: any) => void;
+  task: FrequentTask;
+  onUseTemplate?: (task: FrequentTask) => void;
 };
 
 export default function FrequentTaskItem({ task, onUseTemplate }: FrequentTaskItemProps) {
@@ -32,6 +26,7 @@ export default function FrequentTaskItem({ task, onUseTemplate }: FrequentTaskIt
       const { error } = await supabase
         .from('frequent_tasks')
         .delete()
+        // @ts-expect-error - Supabase type inference issue with .delete().eq() chain
         .eq('id', task.id);
       
       if (error) throw error;

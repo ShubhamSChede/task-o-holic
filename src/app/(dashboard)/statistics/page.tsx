@@ -1,21 +1,7 @@
 // src/app/(dashboard)/statistics/page.tsx
 import { createClient } from '@/lib/supabase/server';
 import StatisticsCharts from '@/components/dashboard/statistics-charts';
-
-// Define Todo type for better type safety
-type Todo = {
-  id: string;
-  title: string;
-  description?: string | null;
-  created_by: string;
-  priority?: string | null;
-  is_complete: boolean;
-  due_date?: string | null;
-  tags?: string[] | null;
-  organization_id?: string | null;
-  created_at: string;
-  updated_at?: string;
-};
+import type { Todo } from '@/types/supabase';
 
 export default async function StatisticsPage() {
   // Add 'await' here to fix Promise error

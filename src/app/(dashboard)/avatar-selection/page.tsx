@@ -59,9 +59,10 @@ export default function AvatarSelectionPage() {
     
     setIsLoading(true);
     try {
+      const updateData: { avatar_url: string } = { avatar_url: selectedAvatar };
       const { error } = await supabase
         .from('profiles')
-        .update({ avatar_url: selectedAvatar })
+        .update(updateData as any)
         .eq('id', user.id);
 
           if (error) throw error;

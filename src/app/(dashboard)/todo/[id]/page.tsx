@@ -1,26 +1,15 @@
-// src/app/(dashboard)/todos/[id]/page.tsx
+// src/app/(dashboard)/todo/[id]/page.tsx
 import { createClient } from '@/lib/supabase/server';
 import TodoForm from '@/components/todo/todo-form';
 import { notFound, redirect } from 'next/navigation';
+import type { Todo, OrganizationMember } from '@/types/supabase';
 
-// Define types for organization data and todo
-type OrgMember = {
+// Extended type for joined data
+type OrgMemberWithOrg = OrganizationMember & {
   organizations?: {
     id: string;
     name: string;
   };
-};
-
-type Todo = {
-  id: string;
-  title: string;
-  description?: string | null;
-  due_date?: string | null;
-  priority?: string | null;
-  tags?: string[] | null;
-  organization_id?: string | null;
-  is_complete: boolean;
-  created_by: string;
 };
 
 export default async function EditTodoPage({
@@ -47,8 +36,11 @@ export default async function EditTodoPage({
     notFound();
   }
   
+  // Type assertion: TypeScript doesn't recognize that notFound() throws
+  const todoItem = todo as Todo;
+  
   // Check if user is the creator
-  if (todo.created_by !== session.user.id) {
+  if (todoItem.created_by !== session.user.id) {
     redirect('/todo');
   }
   
@@ -63,21 +55,20 @@ export default async function EditTodoPage({
     `)
     .eq('user_id', session.user.id);
   
-  // Add type annotation to 'org' parameter
-  const organizations = userOrganizations?.map((org: OrgMember) => ({
+  const organizations = userOrganizations?.map((org: OrgMemberWithOrg) => ({
     id: org.organizations?.id || '',
     name: org.organizations?.name || '',
   })) || [];
   
   const transformedTodo = {
-    id: todo.id,
-    title: todo.title,
-    description: todo.description ?? undefined,
-    due_date: todo.due_date ?? undefined,
-    priority: todo.priority ?? undefined,
-    tags: todo.tags ?? undefined,
-    organization_id: todo.organization_id ?? undefined,
-    is_complete: todo.is_complete
+    id: todoItem.id,
+    title: todoItem.title,
+    description: todoItem.description ?? undefined,
+    due_date: todoItem.due_date ?? undefined,
+    priority: todoItem.priority ?? undefined,
+    tags: todoItem.tags ?? undefined,
+    organization_id: todoItem.organization_id ?? undefined,
+    is_complete: todoItem.is_complete
   };
 
   return (

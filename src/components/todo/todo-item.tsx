@@ -6,21 +6,10 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import Loader from '@/components/Loader';
+import type { Todo } from '@/types/supabase';
 
 type TodoItemProps = {
-  todo: {
-    id: string;
-    title: string;
-    description: string | null;
-    due_date: string | null;
-    priority: string | null;
-    tags: string[] | null;
-    created_by: string;
-    organization_id: string | null;
-    created_at: string;
-    updated_at: string;
-    is_complete: boolean;
-  };
+  todo: Todo;
   userId: string;
   organizationName?: string;
 };

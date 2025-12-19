@@ -1,6 +1,7 @@
 // src/app/(dashboard)/dashboard/page.tsx
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import type { Todo, OrganizationMember } from '@/types/supabase';
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -17,8 +18,19 @@ export default async function Dashboard() {
     .order('created_at', { ascending: false })
     .limit(5);
 
+  // Type for RPC function result
+  type TodoStats = {
+    total: number;
+    completed: number;
+    pending: number;
+  };
+
   const { data: todoStats, error: todoStatsError } = await supabase
+    // @ts-expect-error - Supabase RPC type inference issue
     .rpc('get_todo_stats', { user_id: session.user.id });
+  
+  // Type assertion for RPC result
+  const stats = todoStats as TodoStats | null;
 
   let totalTodos = 0;
   let completedTodos = 0;
@@ -32,13 +44,13 @@ export default async function Dashboard() {
 
     if (allTodos) {
       totalTodos = allTodos.length;
-      completedTodos = allTodos.filter((todo: { is_complete: boolean }) => todo.is_complete).length;
+      completedTodos = allTodos.filter((todo: Todo) => todo.is_complete).length;
       pendingTodos = totalTodos - completedTodos;
     }
-  } else if (todoStats) {
-    totalTodos = todoStats.total;
-    completedTodos = todoStats.completed;
-    pendingTodos = todoStats.pending;
+  } else if (stats) {
+    totalTodos = stats.total;
+    completedTodos = stats.completed;
+    pendingTodos = stats.pending;
   }
 
   const { data: organizations } = await supabase
@@ -119,7 +131,7 @@ export default async function Dashboard() {
 
         <div className="divide-y divide-purple-100">
           {recentTodos && recentTodos.length > 0 ? (
-            recentTodos.map((todo: any) => (
+            recentTodos.map((todo: Todo) => (
               <div key={todo.id} className="px-4 sm:px-6 py-3 sm:py-4">
                 <div className="flex items-center">
                   <div className={`w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full mr-2 sm:mr-3 flex-shrink-0 ${
@@ -159,20 +171,22 @@ export default async function Dashboard() {
 
         {organizations && organizations.length > 0 ? (
           <div className="sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:gap-2 sm:p-2">
-            {organizations.map((org: any) => (
-              <Link 
-                key={org.organizations.id} 
-                href={`/organizations/${org.organizations.id}`}
-                className="px-4 sm:px-3 py-3 hover:bg-purple-50 flex items-center transition-colors sm:rounded-lg"
-              >
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-100 text-purple-800 rounded-full flex items-center justify-center font-medium text-xs sm:text-sm mr-2 sm:mr-3 flex-shrink-0">
-                  {org.organizations.name.charAt(0)}
-                </div>
-                <span className="font-medium text-sm sm:text-base text-purple-900 truncate">
-                  {org.organizations.name}
-                </span>
-              </Link>
-            ))}
+            {organizations
+              .filter((org: OrganizationMember & { organizations?: { id: string; name: string } }) => org.organizations)
+              .map((org: OrganizationMember & { organizations: { id: string; name: string } }) => (
+                <Link 
+                  key={org.organizations.id} 
+                  href={`/organizations/${org.organizations.id}`}
+                  className="px-4 sm:px-3 py-3 hover:bg-purple-50 flex items-center transition-colors sm:rounded-lg"
+                >
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-100 text-purple-800 rounded-full flex items-center justify-center font-medium text-xs sm:text-sm mr-2 sm:mr-3 flex-shrink-0">
+                    {org.organizations.name.charAt(0)}
+                  </div>
+                  <span className="font-medium text-sm sm:text-base text-purple-900 truncate">
+                    {org.organizations.name}
+                  </span>
+                </Link>
+              ))}
           </div>
         ) : (
           <div className="px-4 sm:px-6 py-4 text-center text-purple-500 text-sm">

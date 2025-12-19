@@ -2,15 +2,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound, redirect } from 'next/navigation';
 import OrgForm from '@/components/organization/org-form';
-
-// Define Organization type for better type safety
-type Organization = {
-  id: string;
-  name: string;
-  description: string | null;
-  password?: string | null;
-  created_by: string;
-};
+import type { Organization } from '@/types/supabase';
 
 export default async function EditOrganizationPage({
   params,
@@ -36,8 +28,11 @@ export default async function EditOrganizationPage({
     notFound();
   }
   
+  // Type assertion: TypeScript doesn't recognize that notFound() throws
+  const org = organization as Organization;
+  
   // Check if user is the creator
-  if (organization.created_by !== session.user.id) {
+  if (org.created_by !== session.user.id) {
     redirect(`/organizations/${params.id}`);
   }
   
@@ -47,10 +42,10 @@ export default async function EditOrganizationPage({
       <OrgForm 
         mode="edit" 
         initialData={{
-          id: organization.id,
-          name: organization.name,
-          description: organization.description || '',
-          password: organization.password,
+          id: org.id,
+          name: org.name,
+          description: org.description || '',
+          password: org.password,
         }} 
       />
     </div>

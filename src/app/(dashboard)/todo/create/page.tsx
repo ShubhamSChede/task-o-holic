@@ -1,9 +1,10 @@
-// src/app/(dashboard)/todos/create/page.tsx
+// src/app/(dashboard)/todo/create/page.tsx
 import { createClient } from '@/lib/supabase/server';
 import TodoForm from '@/components/todo/todo-form';
+import type { OrganizationMember } from '@/types/supabase';
 
-// Define type for organization member data
-type OrgMember = {
+// Extended type for joined data
+type OrgMemberWithOrg = OrganizationMember & {
   organizations?: {
     id: string;
     name: string;
@@ -52,8 +53,7 @@ export default async function CreateTodoPage({
       `)
       .eq('user_id', session.user.id);
     
-    // Add type annotation to 'org' parameter
-    organizations = userOrganizations?.map((org: OrgMember) => ({
+    organizations = userOrganizations?.map((org: OrgMemberWithOrg) => ({
       id: org.organizations?.id || '',
       name: org.organizations?.name || '',
     })) || [];

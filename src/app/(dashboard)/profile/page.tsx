@@ -1,14 +1,7 @@
 // src/app/(dashboard)/profile/page.tsx
 import { createClient } from '@/lib/supabase/server';
 import ProfileForm from '@/components/profile/profile-form';
-
-// Define Profile type for better type safety
-type Profile = {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  created_at?: string;
-};
+//import type { Profile } from '@/types/supabase';
 
 export default async function ProfilePage() {
   // Add 'await' here to properly resolve the Promise

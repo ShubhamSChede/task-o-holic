@@ -23,13 +23,10 @@ import {
 } from "lucide-react";
 import AvatarSelector from './avatar-selector';
 import { useProfile } from '@/contexts/profile-context';
+import type { Profile } from '@/types/supabase';
 
 type ProfileFormProps = {
-  initialData: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-  };
+  initialData: Pick<Profile, 'id' | 'full_name' | 'avatar_url'>;
   userEmail: string;
 };
 

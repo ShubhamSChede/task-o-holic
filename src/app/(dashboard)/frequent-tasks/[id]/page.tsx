@@ -2,15 +2,10 @@
 import { createClient } from '@/lib/supabase/server';
 import FrequentTaskForm from '@/components/frequent-task/frequent-task-form';
 import { notFound, redirect } from 'next/navigation';
+import type { FrequentTask } from '@/types/supabase';
 
-// Define types for better type safety
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  priority: string | null;
-  tags: string[] | null;
-  organization_id: string;
+// Extended type for joined data
+type TaskWithOrg = FrequentTask & {
   organizations?: {
     created_by: string;
   };
@@ -40,8 +35,10 @@ export default async function EditFrequentTaskPage({
     notFound();
   }
   
+  const taskWithOrg = task as TaskWithOrg;
+  
   // Check if user is the organization creator
-  if (task.organizations?.created_by !== session.user.id) {
+  if (taskWithOrg.organizations?.created_by !== session.user.id) {
     redirect('/frequent-tasks');
   }
   
@@ -57,14 +54,14 @@ export default async function EditFrequentTaskPage({
       <FrequentTaskForm
         mode="edit"
         initialData={{
-          id: task.id,
-          title: task.title,
-          description: task.description || '',
-          priority: task.priority || '',
-          tags: task.tags || [],
+          id: taskWithOrg.id,
+          title: taskWithOrg.title,
+          description: taskWithOrg.description || '',
+          priority: taskWithOrg.priority || '',
+          tags: taskWithOrg.tags || [],
         }}
         organizations={createdOrganizations || []}
-        preSelectedOrgId={task.organization_id}
+        preSelectedOrgId={taskWithOrg.organization_id}
       />
     </div>
   );

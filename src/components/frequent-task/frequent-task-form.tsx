@@ -84,33 +84,44 @@ export default function FrequentTaskForm({
       const { data: org, error: orgError } = await supabase
         .from('organizations')
         .select('created_by')
+        // @ts-ignore - Supabase type inference issue with .eq()
         .eq('id', formData.organization_id)
         .single();
       
       if (orgError) throw orgError;
-      if (org.created_by !== userData.user.id) {
+      if (!org || (org as { created_by: string }).created_by !== userData.user.id) {
         throw new Error('Only the organization creator can manage frequent tasks');
       }
       
-      const taskData = {
-        title: formData.title,
-        description: formData.description || null,
-        priority: formData.priority || null,
-        tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
-        organization_id: formData.organization_id,
-        created_by: userData.user.id,
-      };
-      
       if (mode === 'create') {
+        const taskData = {
+          title: formData.title,
+          description: formData.description || null,
+          priority: formData.priority || null,
+          tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : null,
+          organization_id: formData.organization_id,
+          created_by: userData.user.id,
+        };
+        
         const { error: createError } = await supabase
           .from('frequent_tasks')
+          // @ts-ignore - Supabase type inference issue with .insert()
           .insert(taskData);
         
         if (createError) throw createError;
       } else if (mode === 'edit' && initialData?.id) {
+        const taskData = {
+          title: formData.title,
+          description: formData.description || null,
+          priority: formData.priority || null,
+          tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : null,
+        };
+        
         const { error: updateError } = await supabase
           .from('frequent_tasks')
+          // @ts-ignore - Supabase type inference issue with .update()
           .update(taskData)
+          // @ts-ignore - Supabase type inference issue with .eq()
           .eq('id', initialData.id);
         
         if (updateError) throw updateError;

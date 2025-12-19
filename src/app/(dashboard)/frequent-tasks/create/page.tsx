@@ -2,6 +2,7 @@
 import { createClient } from '@/lib/supabase/server';
 import FrequentTaskForm from '@/components/frequent-task/frequent-task-form';
 import { redirect } from 'next/navigation';
+import type { Organization } from '@/types/supabase';
 
 export default async function CreateFrequentTaskPage({
   searchParams,
@@ -31,13 +32,20 @@ export default async function CreateFrequentTaskPage({
   
   // If org ID is provided, check if user is the creator
   if (orgId) {
-    const { data: org } = await supabase
+    const { data: org, error } = await supabase
       .from('organizations')
       .select('created_by')
       .eq('id', orgId)
       .single();
     
-    if (!org || org.created_by !== session.user.id) {
+    if (error || !org) {
+      redirect('/frequent-tasks');
+    }
+    
+    // Type assertion: TypeScript doesn't properly infer type when selecting specific fields
+    const organization = org as Pick<Organization, 'created_by'>;
+    
+    if (organization.created_by !== session.user.id) {
       redirect('/frequent-tasks');
     }
   }

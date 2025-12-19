@@ -1,17 +1,11 @@
 // src/app/(dashboard)/organizations/page.tsx
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import type { OrganizationMember, Organization } from '@/types/supabase';
 
-// Define type for organization data
-type OrgMember = {
-  role: string;
-  joined_at: string;
-  organizations?: {
-    id: string;
-    name: string;
-    description: string | null;
-    created_by: string;
-  };
+// Extended type for joined data
+type OrgMemberWithOrg = OrganizationMember & {
+  organizations?: Organization;
 };
 
 export default async function OrganizationsPage() {
@@ -61,7 +55,7 @@ export default async function OrganizationsPage() {
       
       {userOrganizations && userOrganizations.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {userOrganizations.map((org: OrgMember) => (
+          {userOrganizations.map((org: OrgMemberWithOrg) => (
             <Link 
               key={org.organizations?.id} 
               href={`/organizations/${org.organizations?.id}`}

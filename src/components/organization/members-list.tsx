@@ -5,18 +5,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Loader from '@/components/Loader';
+import type { OrganizationMember, Profile } from '@/types/supabase';
 
 type MembersListProps = {
-  members: {
-    id: string;
-    user_id: string;
-    role: string;
-    joined_at: string;
-    profiles: {
-      id: string;
-      full_name: string | null;
-    };
-  }[];
+  members: (OrganizationMember & {
+    profiles: Profile;
+  })[];
   organizationId: string;
   isCreator: boolean;
   currentUserId: string;
@@ -37,11 +31,12 @@ export default function MembersList({ members, organizationId, isCreator, curren
     
     setIsLoading(true);
     try {
-    const { error } = await supabase
+    const deleteQuery = supabase
       .from('organization_members')
-      .delete()
-      .eq('id', memberId as any)
-      .eq('organization_id', organizationId as any);
+      .delete();
+    const { error } = await (deleteQuery as any)
+      .eq('id', memberId)
+      .eq('organization_id', organizationId);
       
       if (error) throw error;
       router.refresh();
