@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from "@/components/ui/button";
@@ -156,11 +157,13 @@ export default function AvatarSelectionPage() {
                     }`}
                     onClick={() => handleAvatarSelect(avatarUrl)}
                   >
-                    <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg">
-                      <img
+                    <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg relative">
+                      <Image
                         src={avatarUrl}
                         alt={`Avatar ${index + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                        fill
+                        sizes="150px"
+                        className="object-cover transition-transform duration-300 hover:scale-110"
                       />
                     </div>
                     {selectedAvatar === avatarUrl && (

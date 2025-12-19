@@ -104,7 +104,7 @@ export default function AuthForm({ type }: AuthFormProps) {
               Verification Email Sent!
             </h3>
             <p className="text-purple-600 mb-4">
-              We've sent a verification link to <strong>{email}</strong>
+              We&apos;ve sent a verification link to <strong>{email}</strong>
             </p>
             <p className="text-sm text-purple-500 mb-6">
               Please check your email and click the verification link to activate your account.

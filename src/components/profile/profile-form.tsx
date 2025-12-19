@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from "@/components/ui/button";
@@ -58,10 +59,12 @@ export default function ProfileForm({ initialData, userEmail }: ProfileFormProps
     try {
       const { error: updateError } = await supabase
         .from('profiles')
+        // @ts-expect-error - Supabase type inference issue with .update()
         .update({
           full_name: formData.full_name || null,
           avatar_url: formData.avatar_url || null,
         })
+        // @ts-expect-error - Supabase type inference issue with .eq()
         .eq('id', initialData.id);
       
           if (updateError) throw updateError;
@@ -134,18 +137,21 @@ export default function ProfileForm({ initialData, userEmail }: ProfileFormProps
             <div className="flex items-center space-x-4">
               <div className="flex-shrink-0">
                 {formData.avatar_url ? (
-                  <img 
-                    src={formData.avatar_url} 
-                    alt="Avatar Preview" 
-                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-200"
-                    onError={(e) => {
-                      // Show fallback if image fails to load
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = 'flex';
-                    }}
-                  />
+                  <div className="w-16 h-16 rounded-full border-2 border-purple-200 relative overflow-hidden">
+                    <Image 
+                      src={formData.avatar_url} 
+                      alt="Avatar Preview" 
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
+                    />
+                  </div>
                 ) : null}
                 <div 
                   className={`w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium text-lg border-2 border-purple-200 ${formData.avatar_url ? 'hidden' : ''}`}

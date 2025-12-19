@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from "@/lib/utils";
@@ -60,14 +61,15 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
     >
       <div className="p-4 border-b border-purple-100 flex items-center justify-between">
         <div className="flex items-center min-w-0 flex-1">
-          <img 
-            src="/logo.png" 
-            alt="Task-O-Holic Logo" 
-            className={cn(
-              "object-contain flex-shrink-0",
-              expanded ? "h-6 w-auto" : "h-6 w-6"
-            )}
-          />
+          <div className={cn("relative flex-shrink-0", expanded ? "h-6 w-auto" : "h-6 w-6")}>
+            <Image 
+              src="/logo.png" 
+              alt="Task-O-Holic Logo" 
+              width={expanded ? 96 : 24}
+              height={24}
+              className="object-contain"
+            />
+          </div>
           {expanded && (
             <h1 className="ml-2 font-bold text-lg text-purple-800 truncate">TASK-O-HOLIC</h1>
           )}
@@ -130,18 +132,21 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
       <div className="p-4">
         <div className="flex items-center">
           {user?.avatar_url ? (
-            <img 
-              src={user.avatar_url} 
-              alt="Avatar" 
-              className="w-8 h-8 rounded-full object-cover"
-              onError={(e) => {
-                // Fallback to initials if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const fallback = target.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'flex';
-              }}
-            />
+            <div className="w-8 h-8 relative">
+              <Image 
+                src={user.avatar_url} 
+                alt="Avatar" 
+                fill
+                sizes="32px"
+                className="rounded-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+            </div>
           ) : null}
           <div 
             className={`w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium ${user?.avatar_url ? 'hidden' : ''}`}
@@ -180,11 +185,15 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
       <SheetContent side="left" className="p-0 w-72">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <div className="p-4 border-b border-purple-100 flex items-center">
-          <img 
-            src="/logo.png" 
-            alt="Task-O-Holic Logo" 
-            className="h-6 w-auto object-contain flex-shrink-0"
-          />
+          <div className="h-6 w-auto flex-shrink-0 relative">
+            <Image 
+              src="/logo.png" 
+              alt="Task-O-Holic Logo" 
+              width={96}
+              height={24}
+              className="object-contain"
+            />
+          </div>
           <h1 className="ml-2 font-bold text-lg text-purple-800 truncate">TASK-O-HOLIC</h1>
         </div>
         <div className="py-4">
@@ -236,18 +245,21 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
         <div className="p-4">
           <div className="flex items-center">
             {user?.avatar_url ? (
-              <img 
-                src={user.avatar_url} 
-                alt="Avatar" 
-                className="w-8 h-8 rounded-full object-cover"
-                onError={(e) => {
-                  // Fallback to initials if image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
+              <div className="w-8 h-8 relative">
+                <Image 
+                  src={user.avatar_url} 
+                  alt="Avatar" 
+                  fill
+                  sizes="32px"
+                  className="rounded-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+              </div>
             ) : null}
             <div 
               className={`w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium ${user?.avatar_url ? 'hidden' : ''}`}

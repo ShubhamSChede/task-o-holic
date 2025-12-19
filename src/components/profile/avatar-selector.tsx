@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
@@ -77,11 +78,13 @@ export default function AvatarSelector({
                 }`}
                 onClick={() => handleAvatarSelect(avatarUrl)}
               >
-                <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-                  <img
+                <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 relative">
+                  <Image
                     src={avatarUrl}
                     alt={`Avatar ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="120px"
+                    className="object-cover"
                   />
                 </div>
                 {selectedAvatar === avatarUrl && (
