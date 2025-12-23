@@ -48,6 +48,7 @@ export default function OrgJoinForm() {
       const { data: orgs, error: orgError } = await supabase
         .from('organizations')
         .select('id, name, password')
+        // @ts-expect-error - Supabase type inference issue with .eq()
         .eq('name', formData.name);
       
       if (orgError) throw orgError;
@@ -73,7 +74,9 @@ export default function OrgJoinForm() {
       const { data: existingMembers, error: memberError } = await supabase
         .from('organization_members')
         .select('id')
+        // @ts-expect-error - Supabase type inference issue with .eq()
         .eq('organization_id', org.id)
+        // @ts-expect-error - Supabase type inference issue with .eq()
         .eq('user_id', userData.user.id);
       
       if (memberError) throw memberError;

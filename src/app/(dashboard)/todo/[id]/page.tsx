@@ -15,9 +15,8 @@ type OrgMemberWithOrg = OrganizationMember & {
 export default async function EditTodoPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  // Add 'await' here to properly resolve the Promise
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
@@ -25,11 +24,14 @@ export default async function EditTodoPage({
     return null;
   }
   
+  // Await the params to get the id
+  const { id } = await params;
+
   // Fetch the todo
   const { data: todo, error } = await supabase
     .from('todos')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
   
   if (error || !todo) {

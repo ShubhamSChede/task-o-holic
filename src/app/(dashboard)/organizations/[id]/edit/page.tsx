@@ -7,9 +7,8 @@ import type { Organization } from '@/types/supabase';
 export default async function EditOrganizationPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  // Add 'await' here to properly resolve the Promise
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   
@@ -17,11 +16,14 @@ export default async function EditOrganizationPage({
     return null;
   }
   
+  // Await the params to get the id
+  const { id } = await params;
+
   // Fetch organization
   const { data: organization, error } = await supabase
     .from('organizations')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
   
   if (error || !organization) {
@@ -33,7 +35,7 @@ export default async function EditOrganizationPage({
   
   // Check if user is the creator
   if (org.created_by !== session.user.id) {
-    redirect(`/organizations/${params.id}`);
+    redirect(`/organizations/${id}`);
   }
   
   return (

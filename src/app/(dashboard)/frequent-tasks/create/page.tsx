@@ -7,7 +7,7 @@ import type { Organization } from '@/types/supabase';
 export default async function CreateFrequentTaskPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -17,7 +17,8 @@ export default async function CreateFrequentTaskPage({
   }
   
   // Get org ID from query param if available
-  const orgId = typeof searchParams.org === 'string' ? searchParams.org : undefined;
+  const params = await searchParams;
+  const orgId = typeof params.org === 'string' ? params.org : undefined;
   
   // Fetch organizations created by the user
   const { data: createdOrganizations } = await supabase
