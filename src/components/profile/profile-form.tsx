@@ -64,7 +64,7 @@ export default function ProfileForm({ initialData, userEmail }: ProfileFormProps
           full_name: formData.full_name || null,
           avatar_url: formData.avatar_url || null,
         })
-        // @ts-expect-error - Supabase type inference issue with .eq()
+        
         .eq('id', initialData.id);
       
           if (updateError) throw updateError;

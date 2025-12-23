@@ -113,7 +113,7 @@ export default function OrgForm(props: OrgFormProps) {
           .from('organizations')
           // @ts-expect-error - Supabase type inference issue with .update()
           .update(orgData)
-          // @ts-expect-error - Supabase type inference issue with .eq()
+          
           .eq('id', initialData.id);
         
         if (updateError) throw updateError;

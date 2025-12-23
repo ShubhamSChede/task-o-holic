@@ -35,9 +35,9 @@ export default function MembersList({ members, organizationId, isCreator, curren
       .from('organization_members')
       .delete();
     const { error } = await deleteQuery
-      // @ts-expect-error - Supabase type inference issue with .eq()
+      
       .eq('id', memberId)
-      // @ts-expect-error - Supabase type inference issue with .eq()
+      
       .eq('organization_id', organizationId);
       
       if (error) throw error;

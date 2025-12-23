@@ -97,7 +97,7 @@ function DashboardContent({
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
-        // @ts-expect-error - Supabase type inference issue with .eq()
+        
         .eq('id', session.user.id)
         .single();
         
@@ -125,7 +125,7 @@ function DashboardContent({
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          // @ts-expect-error - Supabase type inference issue with .eq()
+          
           .eq('id', session.user.id)
           .single();
           
@@ -153,7 +153,7 @@ function DashboardContent({
               name
             )
           `)
-          // @ts-expect-error - Supabase type inference issue with .eq()
+          
           .eq('user_id', session.user.id);
           
         if (orgsError) {

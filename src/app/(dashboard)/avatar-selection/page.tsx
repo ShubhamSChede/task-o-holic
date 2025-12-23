@@ -68,7 +68,6 @@ export default function AvatarSelectionPage() {
         .from('profiles')
         // @ts-expect-error - Supabase type inference issue with .update()
         .update(updateData)
-        // @ts-expect-error - Supabase type inference issue with .eq()
         .eq('id', user.id);
 
           if (error) throw error;

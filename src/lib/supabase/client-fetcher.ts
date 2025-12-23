@@ -20,17 +20,21 @@ export async function fetchFromSupabase() {
             name
           )
         `)
+        
         .eq('created_by', userId)
         .order('created_at', { ascending: false });
       
       // Apply filters
       if (filters.status === 'complete') {
+        
         query = query.eq('is_complete', true);
       } else if (filters.status === 'incomplete') {
+        
         query = query.eq('is_complete', false);
       }
       
       if (filters.priority) {
+        
         query = query.eq('priority', filters.priority);
       }
       

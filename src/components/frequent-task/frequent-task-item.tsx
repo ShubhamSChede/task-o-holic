@@ -26,7 +26,6 @@ export default function FrequentTaskItem({ task, onUseTemplate }: FrequentTaskIt
       const { error } = await supabase
         .from('frequent_tasks')
         .delete()
-        // @ts-expect-error - Supabase type inference issue with .delete().eq() chain
         .eq('id', task.id);
       
       if (error) throw error;

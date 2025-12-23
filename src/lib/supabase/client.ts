@@ -3,13 +3,18 @@ import { createBrowserClient } from '@supabase/ssr'
 import { Database } from '@/types/supabase'
 
 export const createClient = () => {
+  const options = {
+    auth: {
+      redirectTo:
+        typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/callback`
+          : undefined,
+    },
+  } as unknown
+
   return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined
-      }
-    }
+    options as Parameters<typeof createBrowserClient<Database>>[2],
   )
 }

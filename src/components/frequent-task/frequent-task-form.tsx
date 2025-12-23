@@ -84,7 +84,7 @@ export default function FrequentTaskForm({
       const { data: org, error: orgError } = await supabase
         .from('organizations')
         .select('created_by')
-        // @ts-expect-error - Supabase type inference issue with .eq()
+        
         .eq('id', formData.organization_id)
         .single();
       
@@ -121,7 +121,7 @@ export default function FrequentTaskForm({
           .from('frequent_tasks')
           // @ts-expect-error - Supabase type inference issue with .update()
           .update(taskData)
-          // @ts-expect-error - Supabase type inference issue with .eq()
+          
           .eq('id', initialData.id);
         
         if (updateError) throw updateError;

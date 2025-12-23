@@ -30,7 +30,7 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
         .from('todos')
         // @ts-expect-error - Supabase type inference issue with .update()
         .update({ is_complete: !todo.is_complete })
-        // @ts-expect-error - Supabase type inference issue with .eq()
+        
         .eq('id', todo.id);
       
       if (error) throw error;
@@ -52,7 +52,7 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
       const { error } = await supabase
         .from('todos')
         .delete()
-        // @ts-expect-error - Supabase type inference issue with .eq()
+        
         .eq('id', todo.id);
       
       if (error) throw error;

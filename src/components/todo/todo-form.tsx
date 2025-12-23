@@ -90,7 +90,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
           const { data: template, error } = await supabase
             .from('frequent_tasks')
             .select('*')
-            // @ts-expect-error - Supabase type inference issue with .eq()
+            
             .eq('id', templateId)
             .single();
           
@@ -178,7 +178,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
           .from('todos')
           // @ts-expect-error - Supabase type inference issue with .update()
           .update(todoData)
-          // @ts-expect-error - Supabase type inference issue with .eq()
+          
           .eq('id', initialData.id);
         if (updateError) throw updateError;
       }
