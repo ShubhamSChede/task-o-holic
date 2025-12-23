@@ -88,6 +88,7 @@ export default function OrgJoinForm() {
       // Add user as a member
       const { error: joinError } = await supabase
         .from('organization_members')
+        // @ts-expect-error - Supabase type inference issue with .insert()
         .insert({
           organization_id: org.id,
           user_id: userData.user.id,
