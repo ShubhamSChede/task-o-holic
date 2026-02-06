@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
 
   // Handle common redirects
   if (pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.next();
   }
 
   // Handle old routes that might exist

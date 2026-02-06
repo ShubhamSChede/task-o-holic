@@ -4,7 +4,7 @@ import OrgJoinForm from '@/components/organization/org-join-form';
 export default function JoinOrganizationPage() {
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-purple-800">Join an Organization</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-50">Join organization</h1>
       <OrgJoinForm />
     </div>
   );

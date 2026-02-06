@@ -96,14 +96,14 @@ function AuthCallbackContent() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-purple-200 shadow-xl">
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
+        <Card className="w-full max-w-md border-slate-800/80 bg-slate-950/80 shadow-[0_20px_60px_rgba(15,23,42,0.95)]">
           <CardContent className="p-8 text-center">
             <Loader />
-            <h2 className="text-xl font-semibold text-purple-800 mt-4">
-              Verifying your email...
+            <h2 className="mt-4 text-xl font-semibold text-slate-50">
+              Verifying your email…
             </h2>
-            <p className="text-purple-600 mt-2">
+            <p className="mt-2 text-sm text-slate-400">
               Please wait while we verify your email address.
             </p>
           </CardContent>
@@ -113,10 +113,10 @@ function AuthCallbackContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-purple-200 shadow-xl">
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
+      <Card className="w-full max-w-md border-slate-800/80 bg-slate-950/80 shadow-[0_20px_60px_rgba(15,23,42,0.95)]">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-purple-800">
+          <CardTitle className="text-2xl font-semibold text-slate-50">
             {status === 'success' ? 'Email Verified!' : 'Verification Failed'}
           </CardTitle>
         </CardHeader>
@@ -124,23 +124,23 @@ function AuthCallbackContent() {
         <CardContent className="space-y-6">
           <div className="text-center">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-              status === 'success' ? 'bg-green-100' : 'bg-red-100'
+              status === 'success' ? 'bg-emerald-400/15 border border-emerald-400/40' : 'bg-red-500/15 border border-red-500/40'
             }`}>
               {status === 'success' ? (
-                <CheckCircle className="w-8 h-8 text-green-600" />
+                <CheckCircle className="w-8 h-8 text-emerald-300" />
               ) : (
-                <XCircle className="w-8 h-8 text-red-600" />
+                <XCircle className="w-8 h-8 text-red-400" />
               )}
             </div>
             
             <p className={`text-lg font-medium ${
-              status === 'success' ? 'text-green-800' : 'text-red-800'
+              status === 'success' ? 'text-emerald-200' : 'text-red-300'
             }`}>
               {message}
             </p>
             
             {status === 'success' && (
-              <p className="text-sm text-purple-600 mt-2">
+              <p className="mt-2 text-sm text-slate-400">
                 You will be automatically redirected to your dashboard.
               </p>
             )}
@@ -150,14 +150,14 @@ function AuthCallbackContent() {
             <div className="space-y-3">
               <Button
                 onClick={() => router.push('/login')}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                className="w-full bg-cyan-400 text-slate-950 hover:bg-cyan-300"
               >
                 Go to Sign In
               </Button>
               <Button
                 onClick={() => router.push('/register')}
                 variant="outline"
-                className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
+                className="w-full border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
               >
                 Try Signing Up Again
               </Button>

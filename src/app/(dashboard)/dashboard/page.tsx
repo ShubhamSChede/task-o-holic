@@ -70,127 +70,216 @@ export default async function Dashboard() {
     : 0;
 
   return (
-    <div className="space-y-4 sm:space-y-6 px-3 sm:px-6 py-4 sm:py-6 bg-purple-50 min-h-screen">
-      {/* Responsive Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-purple-800">Dashboard</h1>
+    <div className="min-h-screen space-y-6 bg-transparent px-3 py-4 sm:space-y-8 sm:px-6 sm:py-8">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
+            Mission Control
+          </h1>
+          <p className="mt-1 text-xs text-slate-400 sm:text-sm">
+            A snapshot of what matters today across your personal work and
+            organizations.
+          </p>
+        </div>
         <Link
           href="/todo/create"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition w-full sm:w-auto text-center mt-2"
+          className="inline-flex items-center justify-center rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_16px_40px_rgba(8,47,73,0.65)] transition hover:bg-cyan-300 sm:px-5"
         >
-          Create Task
+          New task
+          <span className="ml-2 text-base leading-none">+</span>
         </Link>
       </div>
 
-      {/* Stats Cards - Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-        {/* Total Tasks Card */}
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-purple-200">
-          <h2 className="text-base sm:text-lg font-semibold text-purple-700">Total Tasks</h2>
-          <p className="mt-1 sm:mt-2 text-2xl sm:text-3xl text-purple-900 font-bold">{totalTodos}</p>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
+        {/* Total Tasks */}
+        <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.9)] sm:p-6">
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-300" />
+          <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+            Total Tasks
+          </h2>
+          <p className="mt-3 text-3xl font-semibold text-slate-50 sm:text-4xl">
+            {totalTodos}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">
+            Everything assigned to you, across spaces.
+          </p>
         </div>
 
-        {/* Completion Rate Card */}
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-purple-200">
-          <h2 className="text-base sm:text-lg font-semibold text-purple-700">Completion Rate</h2>
-          <div className="mt-1 sm:mt-2 flex items-end">
-            <p className="text-2xl sm:text-3xl font-bold text-purple-800">{completionRate}%</p>
-            <div className="ml-3 sm:ml-4 h-2 bg-purple-100 rounded-full flex-1">
-              <div
-                className="h-2 bg-purple-500 rounded-full"
-                style={{ width: `${completionRate}%` }}
-              />
+        {/* Completion Rate */}
+        <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 p-4 sm:p-6">
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-300" />
+          <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+            Completion Rate
+          </h2>
+          <div className="mt-3 flex items-end gap-4">
+            <p className="text-3xl font-semibold text-emerald-300 sm:text-4xl">
+              {completionRate}%
+            </p>
+            <div className="flex-1">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-900">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-300"
+                  style={{ width: `${completionRate}%` }}
+                />
+              </div>
+              <p className="mt-1 text-[11px] text-slate-500">
+                You&apos;re ahead of{' '}
+                <span className="font-medium text-slate-200">most teams</span>{' '}
+                when this is above 70%.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Tasks Status Card */}
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-purple-200 sm:col-span-2 lg:col-span-1">
-          <h2 className="text-base sm:text-lg font-semibold text-purple-700">Tasks Status</h2>
-          <div className="mt-1 sm:mt-2 flex items-center gap-4 sm:gap-6">
+        {/* Status Split */}
+        <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 p-4 sm:col-span-2 sm:p-6 lg:col-span-1">
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-amber-300 via-cyan-300 to-emerald-300" />
+          <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+            Status Split
+          </h2>
+          <div className="mt-3 flex items-center gap-6 text-sm">
             <div>
-              <p className="text-xs sm:text-sm text-purple-500">Completed</p>
-              <p className="text-lg sm:text-xl font-semibold text-green-600">{completedTodos}</p>
+              <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400">
+                Completed
+              </p>
+              <p className="mt-1 text-xl font-semibold text-emerald-300">
+                {completedTodos}
+              </p>
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-purple-500">Pending</p>
-              <p className="text-lg sm:text-xl font-semibold text-orange-500">{pendingTodos}</p>
+              <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400">
+                Pending
+              </p>
+              <p className="mt-1 text-xl font-semibold text-amber-300">
+                {pendingTodos}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Recent tasks */}
-      <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-purple-100 flex justify-between items-center">
-          <h2 className="font-medium text-base sm:text-lg text-purple-800">Recent Tasks</h2>
-          <Link href="/todo" className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm">
-            View All
+      <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/80">
+        <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+          <div>
+            <h2 className="text-sm font-medium text-slate-50 sm:text-base">
+              Recent tasks
+            </h2>
+            <p className="mt-0.5 text-[11px] text-slate-500 sm:text-xs">
+              The last few moves you or your team made.
+            </p>
+          </div>
+          <Link
+            href="/todo"
+            className="text-xs font-medium text-cyan-300 hover:text-cyan-200"
+          >
+            View all
           </Link>
         </div>
 
-        <div className="divide-y divide-purple-100">
+        <div className="divide-y divide-slate-800/80">
           {recentTodos && recentTodos.length > 0 ? (
             recentTodos.map((todo: Todo) => (
-              <div key={todo.id} className="px-4 sm:px-6 py-3 sm:py-4">
+              <div key={todo.id} className="px-4 py-3 sm:px-6 sm:py-4">
                 <div className="flex items-center">
-                  <div className={`w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full mr-2 sm:mr-3 flex-shrink-0 ${
-                    todo.is_complete ? 'bg-green-500' : 'bg-orange-500'
-                  }`}></div>
-                  <Link 
-                    href={`/todo/${todo.id}`} 
-                    className={`font-medium text-sm sm:text-base line-clamp-1 ${
-                      todo.is_complete ? 'text-gray-500 line-through' : 'text-purple-900'
+                  <div
+                    className={`mr-3 h-2.5 w-2.5 flex-shrink-0 rounded-full ${
+                      todo.is_complete ? 'bg-emerald-400' : 'bg-amber-300'
+                    }`}
+                  />
+                  <Link
+                    href={`/todo/${todo.id}`}
+                    className={`line-clamp-1 text-sm font-medium ${
+                      todo.is_complete
+                        ? 'text-slate-500 line-through'
+                        : 'text-slate-100'
                     }`}
                   >
                     {todo.title}
                   </Link>
                 </div>
-                <div className="ml-5 sm:ml-6 mt-0.5 sm:mt-1 text-xs text-purple-500 flex flex-wrap gap-x-2">
-                  {todo.due_date && <span>Due: {new Date(todo.due_date).toLocaleDateString()}</span>}
-                  {todo.priority && <span className="capitalize">{todo.priority} priority</span>}
+                <div className="ml-5 mt-1 flex flex-wrap gap-x-3 text-[11px] text-slate-400">
+                  {todo.due_date && (
+                    <span>
+                      Due:{' '}
+                      {new Date(todo.due_date).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </span>
+                  )}
+                  {todo.priority && (
+                    <span className="capitalize">
+                      {todo.priority} priority
+                    </span>
+                  )}
                 </div>
               </div>
             ))
           ) : (
-            <div className="px-4 sm:px-6 py-4 text-center text-purple-500 text-sm">
-              No tasks yet. Create your first task!
+            <div className="px-4 py-6 text-center text-sm text-slate-500 sm:px-6">
+              No tasks yet. Create your first task to see momentum build.
             </div>
           )}
         </div>
       </div>
 
-      {/* Organizations - Responsive Grid */}
-      <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-purple-100 flex justify-between items-center">
-          <h2 className="font-medium text-base sm:text-lg text-purple-800">My Organizations</h2>
-          <Link href="/organizations" className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm">
-            View All
+      {/* Organizations */}
+      <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/80">
+        <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+          <div>
+            <h2 className="text-sm font-medium text-slate-50 sm:text-base">
+              My organizations
+            </h2>
+            <p className="mt-0.5 text-[11px] text-slate-500 sm:text-xs">
+              Spaces where you collaborate and share execution.
+            </p>
+          </div>
+          <Link
+            href="/organizations"
+            className="text-xs font-medium text-cyan-300 hover:text-cyan-200"
+          >
+            Manage
           </Link>
         </div>
 
         {organizations && organizations.length > 0 ? (
-          <div className="sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:gap-2 sm:p-2">
+          <div className="sm:grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 sm:gap-2 sm:p-2">
             {organizations
-              .filter((org: OrganizationMember & { organizations?: { id: string; name: string } }) => org.organizations)
-              .map((org: OrganizationMember & { organizations: { id: string; name: string } }) => (
-                <Link 
-                  key={org.organizations.id} 
-                  href={`/organizations/${org.organizations.id}`}
-                  className="px-4 sm:px-3 py-3 hover:bg-purple-50 flex items-center transition-colors sm:rounded-lg"
-                >
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-100 text-purple-800 rounded-full flex items-center justify-center font-medium text-xs sm:text-sm mr-2 sm:mr-3 flex-shrink-0">
-                    {org.organizations.name.charAt(0)}
-                  </div>
-                  <span className="font-medium text-sm sm:text-base text-purple-900 truncate">
-                    {org.organizations.name}
-                  </span>
-                </Link>
-              ))}
+              .filter(
+                (
+                  org: OrganizationMember & {
+                    organizations?: { id: string; name: string };
+                  },
+                ) => org.organizations,
+              )
+              .map(
+                (
+                  org: OrganizationMember & {
+                    organizations: { id: string; name: string };
+                  },
+                ) => (
+                  <Link
+                    key={org.organizations.id}
+                    href={`/organizations/${org.organizations.id}`}
+                    className="flex items-center px-4 py-3 transition-colors hover:bg-slate-900/80 sm:rounded-xl sm:px-3"
+                  >
+                    <div className="mr-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-cyan-200">
+                      {org.organizations.name.charAt(0)}
+                    </div>
+                    <span className="truncate text-sm font-medium text-slate-100">
+                      {org.organizations.name}
+                    </span>
+                  </Link>
+                ),
+              )}
           </div>
         ) : (
-          <div className="px-4 sm:px-6 py-4 text-center text-purple-500 text-sm">
-            You&apos;re not part of any organization yet.
+          <div className="px-4 py-6 text-center text-sm text-slate-500 sm:px-6">
+            You&apos;re not part of any organization yet. Create one to share
+            recurring rituals and shared backlogs.
           </div>
         )}
       </div>

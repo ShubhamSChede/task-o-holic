@@ -65,9 +65,9 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
   };
   
   return (
-    <div className="bg-white p-4 sm:p-5 md:p-6 rounded-xl shadow-sm border border-purple-200 hover:shadow-md transition-all duration-200 relative">
+    <div className="relative rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.9)] transition-all duration-200 hover:border-cyan-400/60 hover:shadow-[0_24px_70px_rgba(8,47,73,0.9)] sm:p-5 md:p-6">
       {isLoading && (
-        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-slate-950/80">
           <Loader />
         </div>
       )}
@@ -79,24 +79,28 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
             checked={todo.is_complete}
             onChange={handleToggleComplete}
             disabled={!isCreator || isLoading}
-            className={`h-4 w-4 text-purple-600 rounded border-purple-200 focus:ring-purple-500 ${
+            className={`h-4 w-4 rounded border-slate-600 bg-slate-900 text-cyan-400 focus:ring-cyan-400 ${
               !isCreator ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
             }`}
           />
         </div>
         
         <h3 className={`ml-3 font-medium text-base sm:text-lg ${
-          todo.is_complete ? 'line-through text-purple-400' : 'text-purple-900'
+          todo.is_complete ? 'line-through text-slate-500' : 'text-slate-50'
         } break-words`}>
           {todo.title}
         </h3>
         
         {todo.priority && (
-          <span className={`ml-auto flex-shrink-0 px-2 py-0.5 sm:py-1 text-xs rounded-full ${
-            todo.priority === 'high' ? 'bg-red-100 text-red-800' : 
-            todo.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
-            'bg-green-100 text-green-800'
-          }`}>
+          <span
+            className={`ml-auto flex-shrink-0 rounded-full px-2 py-0.5 text-xs ${
+              todo.priority === 'high'
+                ? 'bg-red-500/15 text-red-300 border border-red-500/40'
+                : todo.priority === 'medium'
+                ? 'bg-amber-400/10 text-amber-200 border border-amber-300/40'
+                : 'bg-emerald-400/10 text-emerald-200 border border-emerald-300/40'
+            }`}
+          >
             {todo.priority}
           </span>
         )}
@@ -104,7 +108,7 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
       
       {/* Description - Improved text wrapping */}
       {todo.description && (
-        <p className="text-xs sm:text-sm text-purple-500 mb-3 sm:mb-4 break-words line-clamp-3">
+        <p className="mb-3 break-words text-xs text-slate-300 sm:mb-4 sm:text-sm line-clamp-3">
           {todo.description}
         </p>
       )}
@@ -113,7 +117,10 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
       {todo.tags && todo.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
           {todo.tags.map((tag) => (
-            <span key={tag} className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+            <span
+              key={tag}
+              className="rounded-full bg-slate-900 px-1.5 py-0.5 text-xs text-slate-200 ring-1 ring-slate-700/80 sm:px-2 sm:py-1"
+            >
               {tag}
             </span>
           ))}
@@ -121,35 +128,35 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
       )}
       
       {/* Meta Information - Stacked on mobile */}
-      <div className="text-xs text-purple-500 flex flex-col sm:flex-row sm:flex-wrap gap-y-1 sm:gap-x-3 sm:gap-y-1">
+      <div className="flex flex-col gap-y-1 text-xs text-slate-400 sm:flex-row sm:flex-wrap sm:gap-x-3 sm:gap-y-1">
         {todo.due_date && (
           <div className="flex items-center gap-1">
-            <span className="text-purple-400">Due:</span>
+            <span className="text-slate-500">Due:</span>
             <span>{new Date(todo.due_date).toLocaleDateString()}</span>
           </div>
         )}
         
         {organizationName && (
           <div className="flex items-center gap-1">
-            <span className="text-purple-400">Org:</span>
+            <span className="text-slate-500">Org:</span>
             <span className="truncate max-w-[200px]">{organizationName}</span>
           </div>
         )}
         
         <div className="flex items-center gap-1">
-          <span className="text-purple-400">Updated:</span>
+          <span className="text-slate-500">Updated:</span>
           <span>{new Date(todo.updated_at).toLocaleDateString()}</span>
         </div>
       </div>
       
       {/* Actions - Easier to tap on mobile */}
       {isCreator && (
-        <div className="mt-3 sm:mt-4 flex justify-between pt-3 sm:pt-4 border-t border-purple-200">
+        <div className="mt-3 flex justify-between border-t border-slate-800 pt-3 sm:mt-4 sm:pt-4">
           {/* Status toggle button */}
           <button 
             onClick={handleToggleComplete}
             disabled={isLoading}
-            className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors disabled:opacity-50 px-2 py-1 -ml-2 rounded-md hover:bg-purple-50"
+            className="rounded-md px-2 py-1 text-xs font-medium text-cyan-300 transition-colors hover:bg-slate-900 sm:text-sm disabled:opacity-50"
           >
             {todo.is_complete ? 'Mark Incomplete' : 'Mark Complete'}
           </button>
@@ -157,7 +164,7 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
           <div className="flex gap-2 sm:gap-3">
             <Link 
               href={`/todo/${todo.id}`}
-              className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-purple-50"
+              className="rounded-md px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-900 sm:text-sm"
             >
               Edit
             </Link>

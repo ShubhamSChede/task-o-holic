@@ -138,17 +138,17 @@ export default function FrequentTaskForm({
   };
   
   return (
-    <Card className="border-purple-200 shadow-sm">
+    <Card className="border-slate-800/80 bg-slate-950/80 shadow-[0_20px_60px_rgba(15,23,42,0.95)]">
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6 pt-6">
           {error && (
-            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+            <Alert variant="destructive" className="bg-red-950/60 text-red-300 border-red-500/40">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-purple-700">
+            <Label htmlFor="title" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Title *
             </Label>
             <Input
@@ -157,13 +157,13 @@ export default function FrequentTaskForm({
               value={formData.title}
               onChange={handleChange}
               required
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400"
               disabled={loading}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-purple-700">
+            <Label htmlFor="description" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Description
             </Label>
             <Textarea
@@ -172,13 +172,13 @@ export default function FrequentTaskForm({
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 resize-none"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400 resize-none"
               disabled={loading}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="priority" className="text-purple-700">
+            <Label htmlFor="priority" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Priority
             </Label>
             <Select
@@ -186,8 +186,8 @@ export default function FrequentTaskForm({
               onValueChange={(value) => handleSelectChange('priority', value === "none" ? "" : value)}
               disabled={loading}
             >
-              <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
-                <SelectValue placeholder="-- Select Priority --" />
+              <SelectTrigger className="border-slate-700 bg-slate-900 text-slate-50 focus:ring-cyan-400">
+                <SelectValue placeholder="-- Select priority --" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">-- Select Priority --</SelectItem>
@@ -199,8 +199,8 @@ export default function FrequentTaskForm({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="tags" className="text-purple-700">
-              Tags (comma-separated)
+            <Label htmlFor="tags" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
+              Tags (comma separated)
             </Label>
             <Input
               id="tags"
@@ -208,13 +208,13 @@ export default function FrequentTaskForm({
               value={formData.tags}
               onChange={handleChange}
               placeholder="work, project, meeting"
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400"
               disabled={loading}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="organization_id" className="text-purple-700">
+            <Label htmlFor="organization_id" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Organization *
             </Label>
             <Select
@@ -222,8 +222,8 @@ export default function FrequentTaskForm({
               onValueChange={(value) => handleSelectChange('organization_id', value)}
               disabled={loading || !!preSelectedOrgId}
             >
-              <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
-                <SelectValue placeholder="-- Select Organization --" />
+              <SelectTrigger className="border-slate-700 bg-slate-900 text-slate-50 focus:ring-cyan-400">
+                <SelectValue placeholder="-- Select organization --" />
               </SelectTrigger>
               <SelectContent>
                 {organizations.map((org) => (
@@ -240,15 +240,15 @@ export default function FrequentTaskForm({
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
+            className="mt-2 bg-cyan-400 text-slate-950 hover:bg-cyan-300"
           >
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                Saving…
               </>
             ) : (
-              mode === 'create' ? 'Create Template' : 'Update Template'
+              mode === 'create' ? 'Create template' : 'Update template'
             )}
           </Button>
           <Button
@@ -256,7 +256,7 @@ export default function FrequentTaskForm({
             variant="outline"
             onClick={() => router.back()}
             disabled={loading}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
+            className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
           >
             Cancel
           </Button>

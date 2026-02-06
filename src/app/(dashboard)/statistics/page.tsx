@@ -21,10 +21,10 @@ export default async function StatisticsPage() {
   if (!todos || todos.length === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-purple-800">Statistics</h1>
-        <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-purple-200">
-          <p className="text-purple-500">You don&apos;t have any tasks yet.</p>
-          <p className="text-purple-500">Create tasks to see statistics.</p>
+        <h1 className="text-2xl font-semibold text-slate-50">Statistics</h1>
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 py-12 text-center text-sm text-slate-400 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
+          <p>You don&apos;t have any tasks yet.</p>
+          <p className="mt-1">Create tasks to see statistics.</p>
         </div>
       </div>
     );
@@ -117,34 +117,34 @@ export default async function StatisticsPage() {
   
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-purple-800">Statistics</h1>
+      <h1 className="text-2xl font-semibold text-slate-50">Statistics</h1>
       
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-purple-200">
-          <h2 className="text-lg font-medium text-purple-800">Total Tasks</h2>
-          <p className="mt-2 text-3xl font-bold text-purple-900">{todos.length}</p>
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
+          <h2 className="text-lg font-medium text-slate-50">Total tasks</h2>
+          <p className="mt-2 text-3xl font-semibold text-slate-50">{todos.length}</p>
         </div>
         
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-purple-200">
-          <h2 className="text-lg font-medium text-purple-800">Completion Rate</h2>
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
+          <h2 className="text-lg font-medium text-slate-50">Completion rate</h2>
           <div className="mt-2 flex items-end">
-            <p className="text-3xl font-bold text-purple-900">
+            <p className="text-3xl font-semibold text-emerald-300">
               {todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0}%
             </p>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-purple-200">
-          <h2 className="text-lg font-medium text-purple-800">Tasks Status</h2>
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
+          <h2 className="text-lg font-medium text-slate-50">Tasks status</h2>
           <div className="mt-2 flex items-center space-x-4">
             <div>
-              <p className="text-sm text-purple-500">Completed</p>
-              <p className="text-xl font-semibold text-green-600">{completedCount}</p>
+              <p className="text-sm text-slate-400">Completed</p>
+              <p className="text-xl font-semibold text-emerald-300">{completedCount}</p>
             </div>
             <div>
-              <p className="text-sm text-purple-500">Pending</p>
-              <p className="text-xl font-semibold text-orange-500">{pendingCount}</p>
+              <p className="text-sm text-slate-400">Pending</p>
+              <p className="text-xl font-semibold text-amber-300">{pendingCount}</p>
             </div>
           </div>
         </div>

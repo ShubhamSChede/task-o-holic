@@ -63,17 +63,20 @@ export default async function FrequentTasksPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-purple-800">Frequent Task Templates</h1>
-        <Link href="/frequent-tasks/create" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm transition-colors mt-2">
-          Create Template
+        <h1 className="text-2xl font-semibold text-slate-50">Frequent task templates</h1>
+        <Link
+          href="/frequent-tasks/create"
+          className="mt-2 rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300"
+        >
+          Create template
         </Link>
       </div>
       
       {/* Explanation */}
-      <div className="bg-purple-50 text-purple-800 p-4 rounded-xl border border-purple-200">
+      <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-300 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
         <p>
-          Frequent task templates allow you to quickly create common tasks in your organizations.
-          As an organization creator, you can define templates that will be available for all members.
+          Frequent task templates let you spin up common workflows in a click. Define rituals and checklists once, reuse them across
+          your organizations.
         </p>
       </div>
       
@@ -83,28 +86,28 @@ export default async function FrequentTasksPage() {
         
         return (
           <div key={org.id} className="space-y-4">
-            <h2 className="text-xl font-semibold flex items-center text-purple-800">
+            <h2 className="flex items-center text-xl font-semibold text-slate-50">
               <span>{org.name}</span>
-              <Link 
-                href={`/frequent-tasks/create?org=${org.id}`} 
-                className="ml-3 text-sm text-purple-600 hover:text-purple-800"
+              <Link
+                href={`/frequent-tasks/create?org=${org.id}`}
+                className="ml-3 text-sm font-medium text-cyan-300 hover:text-cyan-200"
               >
-                Add Template
+                Add template
               </Link>
             </h2>
             
             {orgTasks.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {orgTasks.map((task: FrequentTaskWithOrg) => (
                   <FrequentTaskItem key={task.id} task={task} />
                 ))}
               </div>
             ) : (
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-purple-200 text-center">
-                <p className="text-purple-500">No templates for this organization yet.</p>
-                <Link 
-                  href={`/frequent-tasks/create?org=${org.id}`} 
-                  className="mt-2 inline-block text-purple-600 hover:text-purple-800"
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-6 text-center text-sm text-slate-400 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
+                <p>No templates for this organization yet.</p>
+                <Link
+                  href={`/frequent-tasks/create?org=${org.id}`}
+                  className="mt-2 inline-block text-cyan-300 hover:text-cyan-200"
                 >
                   Create first template
                 </Link>

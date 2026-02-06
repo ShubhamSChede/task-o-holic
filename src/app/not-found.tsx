@@ -7,23 +7,23 @@ import { Home, ArrowLeft, Search } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-purple-200 shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
+      <Card className="w-full max-w-md border-slate-800/80 bg-slate-950/80 shadow-[0_20px_60px_rgba(15,23,42,0.95)]">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-            <Search className="h-8 w-8 text-purple-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-cyan-400/40 bg-cyan-400/10">
+            <Search className="h-8 w-8 text-cyan-300" />
           </div>
-          <CardTitle className="text-2xl font-bold text-purple-800">
+          <CardTitle className="text-2xl font-semibold text-slate-50">
             Page Not Found
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">
+          <p className="text-sm text-slate-300">
             Sorry, we couldn&apos;t find the page you&apos;re looking for. It might have been moved, deleted, or you entered the wrong URL.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
+            <Button asChild className="bg-cyan-400 hover:bg-cyan-300 text-slate-950">
               <Link href="/dashboard" className="flex items-center">
                 <Home className="h-4 w-4 mr-2" />
                 Go to Dashboard
@@ -33,16 +33,22 @@ export default function NotFound() {
             <Button 
               variant="outline" 
               onClick={() => window.history.back()}
-              className="border-purple-200 text-purple-700 hover:bg-purple-50"
+              className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Go Back
             </Button>
           </div>
           
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
-              Need help? <Link href="/profile" className="text-purple-600 hover:text-purple-700">Contact Support</Link>
+          <div className="border-t border-slate-800 pt-4">
+            <p className="text-sm text-slate-500">
+              Need help?{' '}
+              <Link
+                href="/profile"
+                className="text-cyan-300 hover:text-cyan-200"
+              >
+                Contact support
+              </Link>
             </p>
           </div>
         </CardContent>

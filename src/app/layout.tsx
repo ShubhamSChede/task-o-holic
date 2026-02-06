@@ -35,13 +35,35 @@
 // src/app/layout.tsx
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Sora, Space_Grotesk, Playfair_Display } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] });
+// Display font for headlines - elegant and distinctive
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
+
+// Modern sans-serif for body text
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space',
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
+
+// Fallback for UI elements
+const sora = Sora({
+  subsets: ['latin'],
+  variable: '--font-sora',
+  weight: ['300', '400', '500', '600', '700'],
+});
 
 export const metadata: Metadata = {
-  title: 'TodoApp - Organize Your Tasks',
-  description: 'A simple, intuitive todo application that helps you stay organized and collaborate with your team.',
+  title: 'Task-o-holic – Focused Task Management',
+  description:
+    'A bold, modern task manager for focused individuals and teams. Plan, prioritize, and execute with clarity.',
 };
 
 export default function RootLayout({
@@ -51,8 +73,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body
+        className={`${playfair.variable} ${spaceGrotesk.variable} ${sora.variable} font-sans bg-slate-950 text-slate-100 antialiased`}
+      >
+        <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(52,211,153,0.16),_transparent_55%)]">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
+
 

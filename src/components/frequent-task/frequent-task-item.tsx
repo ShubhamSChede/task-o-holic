@@ -47,55 +47,62 @@ export default function FrequentTaskItem({ task, onUseTemplate }: FrequentTaskIt
   };
   
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-200 hover:shadow-md transition-shadow relative">
+    <div className="relative rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.9)] transition-shadow hover:border-cyan-400/60 hover:shadow-[0_24px_70px_rgba(8,47,73,0.9)]">
       {isLoading && (
-        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-slate-950/80">
           <Loader />
         </div>
       )}
-      <h3 className="font-medium text-purple-900">
+      <h3 className="font-medium text-slate-50">
         {task.title}
       </h3>
       
       {task.description && (
-        <p className="text-sm text-purple-500 mt-2">{task.description}</p>
+        <p className="mt-2 text-sm text-slate-300">{task.description}</p>
       )}
       
       <div className="flex flex-wrap gap-2 mt-3">
         {task.priority && (
-          <span className={`px-2 py-1 text-xs rounded-full ${
-            task.priority === 'high' ? 'bg-red-100 text-red-800' : 
-            task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
-            'bg-green-100 text-green-800'
-          }`}>
+          <span
+            className={`rounded-full px-2 py-1 text-xs ${
+              task.priority === 'high'
+                ? 'bg-red-500/15 text-red-300 border border-red-500/40'
+                : task.priority === 'medium'
+                ? 'bg-amber-400/10 text-amber-200 border border-amber-300/40'
+                : 'bg-emerald-400/10 text-emerald-200 border border-emerald-300/40'
+            }`}
+          >
             {task.priority}
           </span>
         )}
         
         {task.tags && task.tags.map((tag) => (
-          <span key={tag} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+          <span
+            key={tag}
+            className="rounded-full bg-slate-900 px-2 py-1 text-xs text-slate-200 ring-1 ring-slate-700/80"
+          >
             {tag}
           </span>
         ))}
       </div>
       
-      <div className="mt-4 flex space-x-3 pt-3 border-t border-purple-100">
+      <div className="mt-4 flex space-x-3 border-t border-slate-800 pt-3">
         <button
           onClick={handleUseTemplate}
-          className="text-sm text-purple-600 hover:text-purple-800"
+          className="text-sm font-medium text-cyan-300 hover:text-cyan-200"
         >
           Use Template
         </button>
         <Link 
           href={`/frequent-tasks/${task.id}`}
-          className="text-sm text-purple-500 hover:text-purple-700"
+          className="text-sm text-slate-300 hover:text-slate-100"
         >
           Edit
         </Link>
         <button
           onClick={handleDelete}
           disabled={isLoading}
-          className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+          className="text-sm text-red-400 hover:text-red-300 disabled:opacity-50"
         >
           Delete
         </button>

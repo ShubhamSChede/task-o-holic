@@ -11,21 +11,24 @@ import { ChevronLeft, ChevronRight, Check, ArrowRight } from "lucide-react";
 import Loader from '@/components/Loader';
 import { useProfile } from '@/contexts/profile-context';
 
-// Avatar URLs from the provided list
-const AVATAR_URLS = [
-  "https://avatar.iran.liara.run/public/50",
-  "https://avatar.iran.liara.run/public/22", 
-  "https://avatar.iran.liara.run/public/45",
-  "https://avatar.iran.liara.run/public/2",
-  "https://avatar.iran.liara.run/public/7",
-  "https://avatar.iran.liara.run/public/37",
-  "https://avatar.iran.liara.run/public/58",
-  "https://avatar.iran.liara.run/public/91",
-  "https://avatar.iran.liara.run/public/86",
-  "https://avatar.iran.liara.run/public/93",
-  "https://avatar.iran.liara.run/public/98",
-  "https://avatar.iran.liara.run/public/61"
+// Local avatar filenames from public/avatars (stored in DB as just filename)
+const AVATAR_FILENAMES = [
+  "9434619.jpg",
+  "9434937.jpg",
+  "9439685.jpg",
+  "9439726.jpg",
+  "9439775.jpg",
+  "9442242.jpg"
 ];
+
+// Helper to get full path for display
+const getAvatarPath = (filename: string | null | undefined): string | null => {
+  if (!filename) return null;
+  // If already a full path, return as is (for backward compatibility)
+  if (filename.startsWith('/')) return filename;
+  // Otherwise prepend /avatars/
+  return `/avatars/${filename}`;
+};
 
 export default function AvatarSelectionPage() {
   const router = useRouter();
@@ -54,8 +57,8 @@ export default function AvatarSelectionPage() {
     getUser();
   }, [router, supabase]);
 
-  const handleAvatarSelect = (avatarUrl: string) => {
-    setSelectedAvatar(avatarUrl);
+  const handleAvatarSelect = (filename: string) => {
+    setSelectedAvatar(filename);
   };
 
   const handleSaveAvatar = async () => {
@@ -63,6 +66,7 @@ export default function AvatarSelectionPage() {
     
     setIsLoading(true);
     try {
+      // Save only the filename to database
       const updateData: { avatar_url: string } = { avatar_url: selectedAvatar };
       const { error } = await supabase
         .from('profiles')
@@ -87,8 +91,8 @@ export default function AvatarSelectionPage() {
     router.push('/dashboard');
   };
 
-  const totalPages = Math.ceil(AVATAR_URLS.length / AVATARS_PER_PAGE);
-  const currentAvatars = AVATAR_URLS.slice(
+  const totalPages = Math.ceil(AVATAR_FILENAMES.length / AVATARS_PER_PAGE);
+  const currentAvatars = AVATAR_FILENAMES.slice(
     currentPage * AVATARS_PER_PAGE,
     (currentPage + 1) * AVATARS_PER_PAGE
   );
@@ -115,25 +119,25 @@ export default function AvatarSelectionPage() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-5xl border-purple-200 shadow-2xl bg-white/80 backdrop-blur-sm">
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
+      <Card className="w-full max-w-5xl border-slate-800/80 bg-slate-950/80 shadow-[0_24px_70px_rgba(15,23,42,0.95)] backdrop-blur-2xl">
         <CardContent className="p-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <span className="text-white text-2xl font-bold">👤</span>
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-cyan-400/40 bg-cyan-400/10">
+              <span className="text-2xl font-semibold">👤</span>
             </div>
-            <h1 className="text-4xl font-bold text-purple-800 mb-2">
-              Choose Your Avatar
+            <h1 className="mb-2 text-4xl font-semibold text-slate-50">
+              Choose your avatar
             </h1>
-            <p className="text-purple-600 text-lg">
+            <p className="text-base text-slate-400">
               Select an avatar to personalize your profile
             </p>
           </div>
@@ -146,34 +150,39 @@ export default function AvatarSelectionPage() {
                   isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'
                 }`}
               >
-                {currentAvatars.map((avatarUrl, index) => (
-                  <div
-                    key={`${currentPage}-${index}`}
-                    className={`relative cursor-pointer transition-all duration-300 transform ${
-                      selectedAvatar === avatarUrl
-                        ? 'ring-4 ring-purple-500 ring-offset-4 scale-110 shadow-2xl'
-                        : 'hover:scale-105 hover:shadow-xl'
-                    }`}
-                    onClick={() => handleAvatarSelect(avatarUrl)}
-                  >
-                    <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg relative">
-                      <Image
-                        src={avatarUrl}
-                        alt={`Avatar ${index + 1}`}
-                        fill
-                        sizes="150px"
-                        className="object-cover transition-transform duration-300 hover:scale-110"
-                      />
-                    </div>
-                    {selectedAvatar === avatarUrl && (
-                      <div className="absolute inset-0 bg-purple-500 bg-opacity-20 flex items-center justify-center rounded-2xl">
-                        <div className="bg-purple-500 text-white rounded-full p-3 shadow-lg animate-pulse">
-                          <Check className="h-8 w-8" />
-                        </div>
+                {currentAvatars.map((filename, index) => {
+                  const avatarPath = getAvatarPath(filename);
+                  return (
+                    <div
+                      key={`${currentPage}-${index}`}
+                      className={`relative cursor-pointer transition-all duration-300 transform ${
+                        selectedAvatar === filename
+                          ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-950 scale-110 shadow-2xl'
+                          : 'hover:scale-105 hover:shadow-xl'
+                      }`}
+                      onClick={() => handleAvatarSelect(filename)}
+                    >
+                      <div className="relative aspect-square overflow-hidden rounded-2xl bg-slate-900 shadow-lg">
+                        {avatarPath && (
+                          <Image
+                            src={avatarPath}
+                            alt={`Avatar ${index + 1}`}
+                            fill
+                            sizes="150px"
+                            className="object-cover transition-transform duration-300 hover:scale-110"
+                          />
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+                      {selectedAvatar === filename && (
+                        <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-cyan-400/10">
+                          <div className="rounded-full bg-cyan-400 p-3 text-slate-950 shadow-lg">
+                            <Check className="h-8 w-8" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -184,7 +193,7 @@ export default function AvatarSelectionPage() {
                 size="icon"
                 onClick={prevPage}
                 disabled={currentPage === 0}
-                className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 disabled:opacity-50"
+                className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-200 disabled:opacity-50"
               >
                 <ChevronLeft className="h-6 w-6" />
               </Button>
@@ -200,10 +209,10 @@ export default function AvatarSelectionPage() {
                         setIsAnimating(false);
                       }, 150);
                     }}
-                    className={`w-4 h-4 rounded-full transition-all duration-200 ${
+                    className={`h-4 w-4 rounded-full transition-all duration-200 ${
                       i === currentPage 
-                        ? 'bg-purple-500 scale-125 shadow-lg' 
-                        : 'bg-purple-200 hover:bg-purple-300'
+                        ? 'bg-cyan-400 scale-125 shadow-lg' 
+                        : 'bg-slate-600 hover:bg-slate-500'
                     }`}
                   />
                 ))}
@@ -214,7 +223,7 @@ export default function AvatarSelectionPage() {
                 size="icon"
                 onClick={nextPage}
                 disabled={currentPage === totalPages - 1}
-                className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 disabled:opacity-50"
+                className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-200 disabled:opacity-50"
               >
                 <ChevronRight className="h-6 w-6" />
               </Button>
@@ -222,27 +231,27 @@ export default function AvatarSelectionPage() {
           </div>
 
           {/* Action Buttons with Enhanced Styling */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Button
               onClick={handleSkip}
               variant="outline"
-              className="border-purple-200 text-purple-600 hover:bg-purple-50 px-8 py-3 text-lg font-medium transition-all duration-200"
+              className="border-slate-700 bg-slate-900 px-8 py-3 text-lg font-medium text-slate-200 transition-all duration-200 hover:bg-slate-800"
             >
-              Skip for Now
+              Skip for now
             </Button>
             <Button
               onClick={handleSaveAvatar}
               disabled={!selectedAvatar || isLoading}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 text-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-cyan-400 px-8 py-3 text-lg font-semibold text-slate-950 transition-all duration-200 hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? (
                 <>
                   <Loader />
-                  <span className="ml-2">Saving...</span>
+                  <span className="ml-2">Saving…</span>
                 </>
               ) : (
                 <>
-                  Save Avatar
+                  Save avatar
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </>
               )}

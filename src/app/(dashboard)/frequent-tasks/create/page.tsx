@@ -52,8 +52,8 @@ export default async function CreateFrequentTaskPage({
   }
   
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-purple-800">Create Frequent Task Template</h1>
+    <div className="mx-auto max-w-2xl">
+      <h1 className="mb-6 text-2xl font-semibold text-slate-50">Create frequent task template</h1>
       <FrequentTaskForm
         mode="create"
         organizations={createdOrganizations || []}

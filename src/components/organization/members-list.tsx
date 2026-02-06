@@ -50,25 +50,27 @@ export default function MembersList({ members, organizationId, isCreator, curren
   };
   
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-purple-200 overflow-hidden relative">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/80 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
       {isLoading && (
-        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-slate-950/80">
           <Loader />
         </div>
       )}
-      <div className="px-6 py-4 border-b border-purple-100">
-        <h2 className="font-medium text-lg text-purple-800">Members ({members.length})</h2>
+      <div className="border-b border-slate-800 px-6 py-4">
+        <h2 className="text-lg font-medium text-slate-50">
+          Members ({members.length})
+        </h2>
       </div>
       
-      <ul className="divide-y divide-purple-100">
+      <ul className="divide-y divide-slate-800/80">
         {members.map((member) => (
-          <li key={member.id} className="px-6 py-4 flex items-center justify-between">
+          <li key={member.id} className="flex items-center justify-between px-6 py-4">
             <div>
-              <p className="font-medium text-purple-900">
+              <p className="font-medium text-slate-50">
                 {member.profiles?.full_name || 'Unknown User'}
                 {member.user_id === currentUserId && ' (You)'}
               </p>
-              <p className="text-sm text-purple-500">
+              <p className="mt-0.5 text-sm text-slate-400">
                 {member.role === 'admin' ? 'Admin' : 'Member'} · Joined {new Date(member.joined_at).toLocaleDateString()}
               </p>
             </div>
@@ -77,7 +79,7 @@ export default function MembersList({ members, organizationId, isCreator, curren
               <button
                 onClick={() => handleRemoveMember(member.id, member.user_id)}
                 disabled={isLoading}
-                className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                className="text-sm text-red-400 hover:text-red-300 disabled:opacity-50"
               >
                 Remove
               </button>

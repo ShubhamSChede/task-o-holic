@@ -130,27 +130,32 @@ export default function TodosPage({
     <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       {/* Responsive Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold text-purple-800">My Tasks</h1>
-        <Link 
-          href="/todo/create" 
-          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm transition-colors w-full sm:w-auto text-center mt-2"
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-50">
+          My Tasks
+        </h1>
+        <Link
+          href="/todo/create"
+          className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-semibold transition-colors w-full sm:w-auto text-center mt-2 shadow-[0_14px_36px_rgba(8,47,73,0.6)]"
         >
-          Create Task
+          Create task
         </Link>
       </div>
       
       {/* Filters - Improved for small screens */}
-      <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-purple-200">
+      <div className="bg-slate-950/80 p-3 sm:p-4 rounded-2xl shadow-[0_16px_40px_rgba(15,23,42,0.9)] border border-slate-800/80">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           <div>
-            <label htmlFor="status-filter" className="block text-sm font-medium text-purple-700 mb-1">
+            <label
+              htmlFor="status-filter"
+              className="block text-xs font-medium text-slate-300 tracking-[0.14em] uppercase mb-1"
+            >
               Status
             </label>
             <select
               id="status-filter"
               defaultValue={status || ''}
               onChange={(e) => applyFilter('status', e.target.value)}
-              className="w-full px-3 py-2 border border-purple-200 rounded-md text-sm text-purple-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-slate-900 text-slate-50 focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
             >
               <option value="">All Status</option>
               <option value="complete">Complete</option>
@@ -159,14 +164,17 @@ export default function TodosPage({
           </div>
           
           <div>
-            <label htmlFor="priority-filter" className="block text-sm font-medium text-purple-700 mb-1">
+            <label
+              htmlFor="priority-filter"
+              className="block text-xs font-medium text-slate-300 tracking-[0.14em] uppercase mb-1"
+            >
               Priority
             </label>
             <select
               id="priority-filter"
               defaultValue={priority || ''}
               onChange={(e) => applyFilter('priority', e.target.value)}
-              className="w-full px-3 py-2 border border-purple-200 rounded-md text-sm text-purple-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-slate-900 text-slate-50 focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
             >
               <option value="">All Priorities</option>
               <option value="high">High</option>
@@ -177,14 +185,17 @@ export default function TodosPage({
           
           {uniqueTags.size > 0 && (
             <div>
-              <label htmlFor="tag-filter" className="block text-sm font-medium text-purple-700 mb-1">
+              <label
+                htmlFor="tag-filter"
+                className="block text-xs font-medium text-slate-300 tracking-[0.14em] uppercase mb-1"
+              >
                 Tag
               </label>
               <select
                 id="tag-filter"
                 defaultValue={tag || ''}
                 onChange={(e) => applyFilter('tag', e.target.value)}
-                className="w-full px-3 py-2 border border-purple-200 rounded-md text-sm text-purple-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-slate-900 text-slate-50 focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
               >
                 <option value="">All Tags</option>
                 {Array.from(uniqueTags).map((tag) => (
@@ -200,7 +211,7 @@ export default function TodosPage({
       
       {/* Loading Indicator */}
       {isLoading ? (
-        <div className="text-center py-8 bg-white rounded-xl shadow-sm border border-purple-200">
+        <div className="text-center py-8 bg-slate-950/80 rounded-2xl shadow-[0_16px_40px_rgba(15,23,42,0.9)] border border-slate-800/80">
           <Loader />
         </div>
       ) : (
@@ -208,12 +219,12 @@ export default function TodosPage({
           {/* Applied Filters Display */}
           {(status || priority || tag) && (
             <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-sm text-purple-700">Applied filters:</span>
+              <span className="text-sm text-slate-300">Applied filters:</span>
               {status && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-900 text-slate-100 border border-slate-700">
                   Status: {status}
                   <button 
-                    className="ml-1 text-purple-600 hover:text-purple-900" 
+                    className="ml-1 text-slate-400 hover:text-slate-200" 
                     onClick={() => applyFilter('status', '')}
                   >
                     ×
@@ -221,10 +232,10 @@ export default function TodosPage({
                 </span>
               )}
               {priority && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-900 text-slate-100 border border-slate-700">
                   Priority: {priority}
                   <button 
-                    className="ml-1 text-purple-600 hover:text-purple-900" 
+                    className="ml-1 text-slate-400 hover:text-slate-200" 
                     onClick={() => applyFilter('priority', '')}
                   >
                     ×
@@ -232,10 +243,10 @@ export default function TodosPage({
                 </span>
               )}
               {tag && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-900 text-slate-100 border border-slate-700">
                   Tag: {tag}
                   <button 
-                    className="ml-1 text-purple-600 hover:text-purple-900" 
+                    className="ml-1 text-slate-400 hover:text-slate-200" 
                     onClick={() => applyFilter('tag', '')}
                   >
                     ×
@@ -243,7 +254,7 @@ export default function TodosPage({
                 </span>
               )}
               <button 
-                className="text-xs text-purple-600 hover:text-purple-800 underline ml-auto" 
+                className="text-xs text-cyan-300 hover:text-cyan-200 underline ml-auto" 
                 onClick={() => window.location.href = window.location.pathname}
               >
                 Clear all filters
@@ -264,9 +275,12 @@ export default function TodosPage({
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 bg-white rounded-xl shadow-sm border border-purple-200">
-              <p className="text-purple-500">No tasks found.</p>
-              <Link href="/todo/create" className="mt-2 inline-block text-purple-600 hover:text-purple-800">
+            <div className="text-center py-8 bg-slate-950/80 rounded-2xl shadow-[0_16px_40px_rgba(15,23,42,0.9)] border border-slate-800/80">
+              <p className="text-slate-400 text-sm">No tasks found.</p>
+              <Link
+                href="/todo/create"
+                className="mt-2 inline-block text-cyan-300 hover:text-cyan-200 text-sm font-medium"
+              >
                 Create your first task
               </Link>
             </div>

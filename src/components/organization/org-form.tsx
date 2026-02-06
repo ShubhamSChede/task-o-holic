@@ -131,17 +131,17 @@ export default function OrgForm(props: OrgFormProps) {
   };
   
   return (
-    <Card className="border-purple-200 shadow-sm">
+    <Card className="border-slate-800/80 bg-slate-950/80 shadow-[0_20px_60px_rgba(15,23,42,0.95)]">
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6 pt-6">
           {error && (
-            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+            <Alert variant="destructive" className="bg-red-950/60 text-red-300 border-red-500/40">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-purple-700">
+            <Label htmlFor="name" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Organization Name *
             </Label>
             <Input
@@ -151,13 +151,13 @@ export default function OrgForm(props: OrgFormProps) {
               value={formData.name}
               onChange={handleChange}
               required
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400"
               disabled={loading}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-purple-700">
+            <Label htmlFor="description" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Description
             </Label>
             <Textarea
@@ -166,13 +166,13 @@ export default function OrgForm(props: OrgFormProps) {
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 resize-none"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400 resize-none"
               disabled={loading}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-purple-700">
+            <Label htmlFor="password" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Password *
             </Label>
             <div className="relative">
@@ -183,7 +183,7 @@ export default function OrgForm(props: OrgFormProps) {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 pr-10"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400 pr-10"
                 disabled={loading}
               />
               {formData.password && (
@@ -195,13 +195,13 @@ export default function OrgForm(props: OrgFormProps) {
                     disabled={loading}
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-green-600" />
+                      <Check className="h-4 w-4 text-emerald-300" />
                     ) : (
-                      <Copy className="h-4 w-4" />
+                      <Copy className="h-4 w-4 text-slate-300" />
                     )}
                     
                     {/* Tooltip */}
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-slate-100 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
                       {copied ? 'Copied!' : 'Copy password'}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
                     </div>
@@ -209,7 +209,7 @@ export default function OrgForm(props: OrgFormProps) {
                 </div>
               )}
             </div>
-            <p className="mt-1 text-xs text-purple-500">
+            <p className="mt-1 text-xs text-slate-500">
               Members will need this password to join the organization.
             </p>
           </div>
@@ -219,7 +219,7 @@ export default function OrgForm(props: OrgFormProps) {
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
+            className="mt-2 bg-cyan-400 text-slate-950 hover:bg-cyan-300"
           >
             {loading ? (
               <>
@@ -237,7 +237,7 @@ export default function OrgForm(props: OrgFormProps) {
             variant="outline"
             onClick={() => router.back()}
             disabled={loading}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
+            className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
           >
             Cancel
           </Button>

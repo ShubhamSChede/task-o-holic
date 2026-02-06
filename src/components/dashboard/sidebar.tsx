@@ -52,33 +52,35 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
   const DesktopSidebar = () => (
     <div 
       className={cn(
-        "bg-white border-r border-purple-200 h-screen flex flex-col transition-all duration-300 fixed left-0 top-0 z-50",
+        "h-screen flex flex-col transition-all duration-300 fixed left-0 top-0 z-40 border-r border-slate-800/80 bg-slate-950/90 backdrop-blur-2xl",
         expanded ? "w-64" : "w-20"
       )}
       style={{
         '--sidebar-width': expanded ? '16rem' : '5rem'
       } as React.CSSProperties}
     >
-      <div className="p-4 border-b border-purple-100 flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
         <div className="flex items-center min-w-0 flex-1">
-          <div className={cn("relative flex-shrink-0", expanded ? "h-6 w-auto" : "h-6 w-6")}>
-            <Image 
-              src="/logo.png" 
-              alt="Task-O-Holic Logo" 
-              width={expanded ? 96 : 24}
-              height={24}
+          <div className="relative h-5 w-5 flex-shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Task-o-holic logo"
+              fill
+              sizes="20px"
               className="object-contain"
             />
           </div>
           {expanded && (
-            <h1 className="ml-2 font-bold text-lg text-purple-800 truncate">TASK-O-HOLIC</h1>
+            <h1 className="ml-2 truncate text-lg font-semibold tracking-tight text-slate-50">
+              Task-o-holic
+            </h1>
           )}
         </div>
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={() => setExpanded(!expanded)}
-          className="text-purple-500 hover:text-purple-700 flex-shrink-0"
+          className="flex-shrink-0 text-slate-400 hover:text-slate-100"
         >
           {expanded ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
         </Button>
@@ -91,10 +93,10 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
               variant="ghost"
               asChild
               className={cn(
-                "w-full justify-start",
+                "w-full justify-start rounded-xl px-2",
                 pathname === item.href 
-                  ? "bg-purple-100 text-purple-800 font-medium hover:bg-purple-100" 
-                  : "text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+                  ? "bg-slate-900 text-cyan-300 font-medium hover:bg-slate-900" 
+                  : "text-slate-300 hover:bg-slate-900/60 hover:text-cyan-200"
               )}
             >
               <Link href={item.href} className="flex items-center">
@@ -106,7 +108,7 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
           
           {expanded && organizations.length > 0 && (
             <div className="mt-6">
-              <h3 className="px-3 text-xs font-semibold text-purple-500 uppercase tracking-wider">
+              <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 My Organizations
               </h3>
               <div className="mt-2 space-y-1">
@@ -115,7 +117,7 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
                     key={org.id}
                     variant="ghost"
                     asChild
-                    className="w-full justify-start text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+                    className="w-full justify-start text-slate-300 hover:bg-slate-900/60 hover:text-cyan-200 rounded-xl px-2"
                   >
                     <Link href={`/organizations/${org.id}`} className="flex items-center">
                       <Building className="h-5 w-5 mr-3" />
@@ -134,7 +136,7 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
           {user?.avatar_url ? (
             <div className="w-8 h-8 relative">
               <Image 
-                src={user.avatar_url} 
+                src={user.avatar_url.startsWith('/') ? user.avatar_url : `/avatars/${user.avatar_url}`}
                 alt="Avatar" 
                 fill
                 sizes="32px"
@@ -149,20 +151,20 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
             </div>
           ) : null}
           <div 
-            className={`w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium ${user?.avatar_url ? 'hidden' : ''}`}
+            className={`w-8 h-8 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center text-sm font-semibold ${user?.avatar_url ? 'hidden' : ''}`}
           >
             {user?.full_name?.charAt(0) || user?.email?.charAt(0) || '?'}
           </div>
           {expanded && (
             <div className="ml-3 overflow-hidden flex-1">
-              <p className="text-sm font-medium text-purple-900 truncate">
+              <p className="text-sm font-medium text-slate-100 truncate">
                 {user?.full_name || 'User'}
               </p>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="text-xs text-red-500 hover:text-red-700 p-0 h-auto"
+                className="p-0 h-auto text-xs text-slate-400 hover:text-red-400"
               >
                 <LogOut className="h-3 w-3 mr-1" />
                 Sign out
@@ -182,19 +184,21 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="p-0 w-72">
+      <SheetContent side="left" className="p-0 w-72 bg-slate-950 text-slate-100 border-r border-slate-800">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-        <div className="p-4 border-b border-purple-100 flex items-center">
-          <div className="h-6 w-auto flex-shrink-0 relative">
+        <div className="flex items-center border-b border-slate-800 px-4 py-3">
+          <div className="relative h-7 w-7 flex-shrink-0">
             <Image 
               src="/logo.png" 
               alt="Task-O-Holic Logo" 
-              width={96}
-              height={24}
+              fill
+              sizes="28px"
               className="object-contain"
             />
           </div>
-          <h1 className="ml-2 font-bold text-lg text-purple-800 truncate">TASK-O-HOLIC</h1>
+          <h1 className="ml-2 truncate text-base font-semibold tracking-tight text-slate-50">
+            Task-o-holic
+          </h1>
         </div>
         <div className="py-4">
           <nav className="px-2 space-y-1">
@@ -204,10 +208,10 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
                 variant="ghost"
                 asChild
                 className={cn(
-                  "w-full justify-start",
+                  "w-full justify-start rounded-xl px-2",
                   pathname === item.href 
-                    ? "bg-purple-100 text-purple-800 font-medium hover:bg-purple-100" 
-                    : "text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+                    ? "bg-slate-900 text-cyan-300 font-medium hover:bg-slate-900" 
+                    : "text-slate-300 hover:bg-slate-900/60 hover:text-cyan-200"
                 )}
               >
                 <Link href={item.href} className="flex items-center">
@@ -219,7 +223,7 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
             
             {organizations.length > 0 && (
               <div className="mt-6">
-                <h3 className="px-3 text-xs font-semibold text-purple-500 uppercase tracking-wider">
+                <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
                   My Organizations
                 </h3>
                 <div className="mt-2 space-y-1">
@@ -228,7 +232,7 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
                       key={org.id}
                       variant="ghost"
                       asChild
-                      className="w-full justify-start text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+                    className="w-full justify-start text-slate-300 hover:bg-slate-900/60 hover:text-cyan-200 rounded-xl px-2"
                     >
                       <Link href={`/organizations/${org.id}`} className="flex items-center">
                         <Building className="h-5 w-5 mr-3" />
@@ -247,7 +251,7 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
             {user?.avatar_url ? (
               <div className="w-8 h-8 relative">
                 <Image 
-                  src={user.avatar_url} 
+                  src={user.avatar_url.startsWith('/') ? user.avatar_url : `/avatars/${user.avatar_url}`}
                   alt="Avatar" 
                   fill
                   sizes="32px"
@@ -261,13 +265,13 @@ export default function Sidebar({ user, organizations }: SidebarProps) {
                 />
               </div>
             ) : null}
-            <div 
-              className={`w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-medium ${user?.avatar_url ? 'hidden' : ''}`}
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400 text-sm font-semibold text-slate-950 ${user?.avatar_url ? 'hidden' : ''}`}
             >
               {user?.full_name?.charAt(0) || user?.email?.charAt(0) || '?'}
             </div>
             <div className="ml-3 overflow-hidden flex-1">
-              <p className="text-sm font-medium text-purple-900 truncate">
+              <p className="text-sm font-medium text-slate-100 truncate">
                 {user?.full_name || 'User'}
               </p>
               <Button

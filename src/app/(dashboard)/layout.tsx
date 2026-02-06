@@ -191,7 +191,7 @@ function DashboardContent({
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
         <Loader />
       </div>
     );
@@ -199,20 +199,15 @@ function DashboardContent({
 
   return (
     <ProfileProvider refreshProfile={refreshProfile}>
-      <div className="min-h-screen bg-gray-50">
-        <Sidebar 
-          user={profile} 
-          organizations={organizations} 
-        />
-        <main 
-          className={`p-6 overflow-auto min-h-screen transition-all duration-300 ${
+      <div className="min-h-screen">
+        <Sidebar user={profile} organizations={organizations} />
+        <main
+          className={`min-h-screen overflow-auto px-3 py-4 transition-all duration-300 sm:px-6 sm:py-6 ${
             expanded ? 'ml-64' : 'ml-20'
           }`}
         >
-          <div className="max-w-7xl mx-auto">
-            <ErrorBoundary>
-              {children}
-            </ErrorBoundary>
+          <div className="mx-auto max-w-7xl">
+            <ErrorBoundary>{children}</ErrorBoundary>
           </div>
         </main>
       </div>

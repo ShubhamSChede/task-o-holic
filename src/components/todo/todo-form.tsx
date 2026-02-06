@@ -194,17 +194,17 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
   };
 
   return (
-    <Card className="border-purple-200">
+    <Card className="border-slate-800/80 bg-slate-950/80 shadow-[0_20px_60px_rgba(15,23,42,0.95)]">
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6 pt-6">
           {error && (
-            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+            <Alert variant="destructive" className="bg-red-950/60 text-red-300 border-red-500/40">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-purple-700">
+            <Label htmlFor="title" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Title *
             </Label>
             <Input
@@ -213,13 +213,13 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
               value={formData.title}
               onChange={handleChange}
               required
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400"
               disabled={loading}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-purple-700">
+            <Label htmlFor="description" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Description
             </Label>
             <Textarea
@@ -228,14 +228,14 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500 resize-none"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400 resize-none"
               disabled={loading}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="due_date" className="text-purple-700">
+              <Label htmlFor="due_date" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
                 Due Date
               </Label>
               <Popover>
@@ -244,8 +244,8 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
                     variant={"outline"}
                     disabled={loading}
                     className={cn(
-                      "w-full justify-start text-left font-normal border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800",
-                      !formData.due_date && "text-muted-foreground"
+                      "w-full justify-start text-left font-normal border-slate-700 bg-slate-900 text-slate-50 hover:bg-slate-800",
+                      !formData.due_date && "text-slate-500"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -267,7 +267,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="priority" className="text-purple-700">
+              <Label htmlFor="priority" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
                 Priority
               </Label>
               <Select
@@ -275,7 +275,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
                 onValueChange={(value) => handleSelectChange('priority', value === "none" ? "" : value)}
                 disabled={loading}
               >
-                <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
+                <SelectTrigger className="border-slate-700 bg-slate-900 text-slate-50 focus:ring-cyan-400">
                   <SelectValue placeholder="-- Select Priority --" />
                 </SelectTrigger>
                 <SelectContent>
@@ -289,7 +289,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tags" className="text-purple-700">
+            <Label htmlFor="tags" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Tags (comma-separated)
             </Label>
             <Input
@@ -298,13 +298,13 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
               value={formData.tags}
               onChange={handleChange}
               placeholder="work, personal, project"
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400"
               disabled={loading}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="organization_id" className="text-purple-700">
+            <Label htmlFor="organization_id" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Organization
             </Label>
             <Select
@@ -312,7 +312,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
               onValueChange={(value) => handleSelectChange('organization_id', value === "personal" ? "" : value)}
               disabled={loading}
             >
-              <SelectTrigger className="border-purple-200 text-purple-900 focus:ring-purple-500">
+              <SelectTrigger className="border-slate-700 bg-slate-900 text-slate-50 focus:ring-cyan-400">
                 <SelectValue placeholder={isOrgSpecific && organizations.length === 1 ? organizations[0].name : "-- Personal Task --"} />
               </SelectTrigger>
               <SelectContent>
@@ -332,11 +332,11 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
               checked={formData.is_complete}
               onCheckedChange={handleCheckboxChange}
               disabled={loading}
-              className="text-purple-600 border-purple-300 focus:ring-purple-500"
+              className="text-cyan-300 border-slate-700 bg-slate-900 focus:ring-cyan-400"
             />
             <Label
               htmlFor="is_complete"
-              className="text-sm text-purple-700 font-normal"
+              className="text-sm font-normal text-slate-300"
             >
               Mark as complete
             </Label>
@@ -347,7 +347,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
+            className="mt-2 bg-cyan-400 text-slate-950 hover:bg-cyan-300"
           >
             {loading ? (
               <>
@@ -363,7 +363,7 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
             variant="outline"
             onClick={() => router.back()}
             disabled={loading}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
+            className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
           >
             Cancel
           </Button>
