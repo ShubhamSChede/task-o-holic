@@ -12,9 +12,15 @@ type TodoItemProps = {
   todo: Todo;
   userId: string;
   organizationName?: string;
+  density?: 'default' | 'compact';
 };
 
-export default function TodoItem({ todo, userId, organizationName }: TodoItemProps) {
+export default function TodoItem({
+  todo,
+  userId,
+  organizationName,
+  density = 'default',
+}: TodoItemProps) {
   const router = useRouter();
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -65,14 +71,24 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
   };
   
   return (
-    <div className="relative rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.9)] transition-all duration-200 hover:border-cyan-400/60 hover:shadow-[0_24px_70px_rgba(8,47,73,0.9)] sm:p-5 md:p-6">
+    <div
+      className={`relative border border-slate-800/80 bg-slate-950/80 shadow-[0_16px_40px_rgba(15,23,42,0.9)] transition-all duration-200 hover:border-cyan-400/60 hover:shadow-[0_24px_70px_rgba(8,47,73,0.9)] ${
+        density === 'compact'
+          ? 'rounded-xl p-3 sm:p-3'
+          : 'rounded-2xl p-4 sm:p-5 md:p-6'
+      }`}
+    >
       {isLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-slate-950/80">
           <Loader />
         </div>
       )}
       {/* Header with Checkbox, Title and Priority - Responsive Layout */}
-      <div className="flex items-start sm:items-center mb-3 sm:mb-4">
+      <div
+        className={`flex items-start sm:items-center ${
+          density === 'compact' ? 'mb-2' : 'mb-3 sm:mb-4'
+        }`}
+      >
         <div className="flex-shrink-0 mt-1 sm:mt-0">
           <input
             type="checkbox"
@@ -85,9 +101,13 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
           />
         </div>
         
-        <h3 className={`ml-3 font-medium text-base sm:text-lg ${
+        <h3
+          className={`ml-3 font-medium ${
+            density === 'compact' ? 'text-sm sm:text-base' : 'text-base sm:text-lg'
+          } ${
           todo.is_complete ? 'line-through text-slate-500' : 'text-slate-50'
-        } break-words`}>
+        } break-words`}
+        >
           {todo.title}
         </h3>
         
@@ -108,14 +128,22 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
       
       {/* Description - Improved text wrapping */}
       {todo.description && (
-        <p className="mb-3 break-words text-xs text-slate-300 sm:mb-4 sm:text-sm line-clamp-3">
+        <p
+          className={`break-words text-xs text-slate-300 line-clamp-3 ${
+            density === 'compact' ? 'mb-2' : 'mb-3 sm:mb-4 sm:text-sm'
+          }`}
+        >
           {todo.description}
         </p>
       )}
       
       {/* Tags - Responsive with better wrapping */}
       {todo.tags && todo.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+        <div
+          className={`flex flex-wrap gap-1.5 sm:gap-2 ${
+            density === 'compact' ? 'mb-2' : 'mb-3 sm:mb-4'
+          }`}
+        >
           {todo.tags.map((tag) => (
             <span
               key={tag}
@@ -151,7 +179,11 @@ export default function TodoItem({ todo, userId, organizationName }: TodoItemPro
       
       {/* Actions - Easier to tap on mobile */}
       {isCreator && (
-        <div className="mt-3 flex justify-between border-t border-slate-800 pt-3 sm:mt-4 sm:pt-4">
+        <div
+          className={`flex justify-between border-t border-slate-800 ${
+            density === 'compact' ? 'mt-2 pt-2' : 'mt-3 pt-3 sm:mt-4 sm:pt-4'
+          }`}
+        >
           {/* Status toggle button */}
           <button 
             onClick={handleToggleComplete}

@@ -28,6 +28,13 @@ export type FrequentTask = Database['public']['Tables']['frequent_tasks']['Row']
 export type FrequentTaskInsert = Database['public']['Tables']['frequent_tasks']['Insert']
 export type FrequentTaskUpdate = Database['public']['Tables']['frequent_tasks']['Update']
 
+export type OrganizationMessage =
+  Database['public']['Tables']['organization_messages']['Row']
+export type OrganizationMessageInsert =
+  Database['public']['Tables']['organization_messages']['Insert']
+export type OrganizationMessageUpdate =
+  Database['public']['Tables']['organization_messages']['Update']
+
 export interface Database {
   public: {
     Tables: {
@@ -230,6 +237,43 @@ export interface Database {
             foreignKeyName: "frequent_tasks_organization_id_fkey"
             columns: ["organization_id"]
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      organization_messages: {
+        Row: {
+          id: string
+          organization_id: string
+          user_id: string
+          content: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          user_id: string
+          content: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          user_id?: string
+          content?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_messages_organization_id_fkey"
+            columns: ["organization_id"]
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_messages_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           }
         ]

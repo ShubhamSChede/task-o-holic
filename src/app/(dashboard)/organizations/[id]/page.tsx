@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MembersList from '@/components/organization/members-list';
 import OrganizationTasks from '@/components/organization/organization-tasks';
-import type { Todo, FrequentTask, Organization, OrganizationMember } from '@/types/supabase';
+import type { Todo, FrequentTask, Organization } from '@/types/supabase';
 import OrganizationTldrawMiniPreview from '@/components/tldraw/organization-tldraw-mini-preview'
 import type { TLEditorSnapshot } from 'tldraw'
+import OrganizationChat from '@/components/organization/organization-chat'
+import FrequentTaskTemplatesCard from '@/components/organization/frequent-task-templates-card'
 
 
 
@@ -17,12 +19,14 @@ type TodoWithProfile = Todo & {
   } | null;
 };
 
-type MemberWithProfile = OrganizationMember & {
-  profiles?: {
-    id: string;
-    full_name: string | null;
-  } | null;
-};
+type OrgMessageWithProfile = {
+  id: string
+  organization_id: string
+  user_id: string
+  content: string
+  created_at: string
+  profiles?: { full_name: string | null } | null
+}
 
 export default async function OrganizationPage({
   params,
@@ -69,7 +73,6 @@ export default async function OrganizationPage({
   const isCreator = org.created_by === session.user.id;
   
   // Fetch organization members
-  console.log('Fetching members for organization:', id);
   const { data: members, error: membersError } = await supabase
     .from('organization_members')
     .select(`
@@ -84,8 +87,6 @@ export default async function OrganizationPage({
     `)
     .eq('organization_id', id)
     .order('joined_at');
-  
-  console.log('Members query result:', { members, membersError });
   
   if (membersError) {
     console.error('Error fetching members:', membersError);
@@ -109,6 +110,13 @@ export default async function OrganizationPage({
     .eq('organization_id', id)
     .order('created_at', { ascending: false });
 
+  const { data: initialMessages } = await supabase
+    .from('organization_messages')
+    .select('*, profiles(full_name)')
+    .eq('organization_id', id)
+    .order('created_at', { ascending: true })
+    .limit(50)
+
   // Latest-only tldraw snapshot for mini preview
   const { data: stateData } = await supabaseAdmin
     .from('tldraw_room_state')
@@ -121,173 +129,126 @@ export default async function OrganizationPage({
     | null
   
   return (
-    <div className="space-y-6 px-2 sm:px-0">
-      {/* Header - Responsive layout for small screens */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-semibold text-slate-50 sm:text-2xl">{org.name}</h1>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href={`/todo/create?org=${id}`}
-            className="mt-2 rounded-full bg-cyan-400 px-3 py-1.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300 sm:px-4 sm:py-2"
-          >
-            Create Task
-          </Link>
-          <Link
-            href={`/organizations/${id}/tldraw`}
-            className="mt-2 rounded-full border border-slate-700 bg-slate-900/40 px-3 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/60 hover:bg-slate-800/60 sm:px-4 sm:py-2"
-          >
-            Open canvas
-          </Link>
-          {isCreator && (
+    <div className="mx-auto w-full max-w-7xl space-y-6 px-2 sm:px-0">
+      {/* Breadcrumb + sticky header */}
+      <div className="sticky top-0 z-30 -mx-2 border-b border-slate-900/70 bg-slate-950/70 px-2 py-4 backdrop-blur sm:rounded-2xl sm:border sm:border-slate-900/70 sm:bg-slate-950/50 sm:px-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <Link href="/organizations" className="hover:text-slate-200">
+                Organizations
+              </Link>
+              <span className="text-slate-600">/</span>
+              <span className="truncate text-slate-300">{org.name}</span>
+            </div>
+            <h1 className="mt-1 truncate text-2xl font-semibold text-slate-50 sm:text-3xl">
+              {org.name}
+            </h1>
+            {org.description ? (
+              <p className="mt-1 line-clamp-2 max-w-3xl text-sm text-slate-300">
+                {org.description}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
             <Link
-              href={`/organizations/${id}/edit`}
-              className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 sm:px-4 sm:py-2"
+              href={`/todo/create?org=${id}`}
+              className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300"
             >
-              Edit Organization
+              Create task
             </Link>
-          )}
+            <Link
+              href={`/organizations/${id}/tldraw`}
+              className="rounded-full border border-slate-700 bg-slate-900/40 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/60 hover:bg-slate-800/60"
+            >
+              Open canvas
+            </Link>
+            {isCreator ? (
+              <Link
+                href={`/organizations/${id}/edit`}
+                className="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+              >
+                Edit
+              </Link>
+            ) : null}
+          </div>
         </div>
-      </div>
-      
-      {/* Organization Details */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.9)] sm:p-6">
-        {org.description && (
-          <div className="mb-4">
-            <h2 className="mb-2 text-lg font-medium text-slate-50">Description</h2>
-            <p className="text-sm text-slate-300 sm:text-base">{org.description}</p>
-          </div>
-        )}
-        
-          <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-6">
-          <div>
-            <span className="text-sm text-slate-500">Created by:</span>{' '}
-            <span className="font-medium text-slate-100">
-              {org.created_by === session.user.id 
-                ? 'You' 
-                : ((members || []) as MemberWithProfile[]).find(
-                    (m) => m.user_id === org.created_by,
-                  )?.profiles?.full_name || 'Unknown'}
-            </span>
-          </div>
-          <div>
-            <span className="text-sm text-slate-500">Members:</span>{' '}
-            <span className="font-medium text-slate-100">{members?.length || 0}</span>
-          </div>
-          <div>
-            <span className="text-sm text-slate-500">Tasks:</span>{' '}
-            <span className="font-medium text-slate-100">{todos?.length || 0}</span>
-          </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/30 px-3 py-1 text-xs text-slate-200">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300/90" />
+            Member
+          </span>
+          <span className="inline-flex items-center rounded-full border border-slate-800 bg-slate-900/30 px-3 py-1 text-xs text-slate-200">
+            Members: <span className="ml-1 font-semibold">{members?.length || 0}</span>
+          </span>
+          <span className="inline-flex items-center rounded-full border border-slate-800 bg-slate-900/30 px-3 py-1 text-xs text-slate-200">
+            Tasks: <span className="ml-1 font-semibold">{todos?.length || 0}</span>
+          </span>
+          <span className="inline-flex items-center rounded-full border border-slate-800 bg-slate-900/30 px-3 py-1 text-xs text-slate-200">
+            Templates:{' '}
+            <span className="ml-1 font-semibold">{frequentTasks?.length || 0}</span>
+          </span>
         </div>
       </div>
 
-      {/* Canvas Mini Preview (wide) */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.9)] sm:p-6">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-base font-medium text-slate-50 sm:text-lg">
-              Canvas preview
-            </h2>
-            <p className="text-sm text-slate-400">
-              Latest board snapshot for this organization.
-            </p>
+      {/* Main layout */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
+        {/* Primary work area */}
+        <div className="lg:col-span-8 space-y-6">
+          <div id="canvas" className="scroll-mt-28 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.9)] sm:p-6">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-base font-medium text-slate-50 sm:text-lg">
+                  Canvas
+                </h2>
+                <p className="text-sm text-slate-400">
+                  A quick preview of the latest saved board.
+                </p>
+              </div>
+              <Link
+                href={`/organizations/${id}/tldraw`}
+                className="rounded-full border border-slate-700 bg-slate-900/40 px-3 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/60 hover:bg-slate-800/60"
+              >
+                View full canvas
+              </Link>
+            </div>
+            <OrganizationTldrawMiniPreview snapshot={initialSnapshot} />
           </div>
 
-          <Link
-            href={`/organizations/${id}/tldraw`}
-            className="rounded-full border border-slate-700 bg-slate-900/40 px-3 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/60 hover:bg-slate-800/60"
-          >
-            View full canvas
-          </Link>
+          <div id="tasks" className="scroll-mt-28">
+            <OrganizationTasks
+              organizationId={id}
+              userId={session.user.id}
+              initialTodos={(todos || []) as TodoWithProfile[]}
+            />
+          </div>
         </div>
 
-        <OrganizationTldrawMiniPreview snapshot={initialSnapshot} />
-      </div>
-      
-      {/* Responsive grid layout - Tasks on left, Members & Templates on right */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        {/* Tasks Column - Scrollable on left, 2/3 width on desktop */}
-        <div className="lg:col-span-2 flex">
-          <OrganizationTasks
-            organizationId={id}
-            userId={session.user.id}
-            initialTodos={(todos || []) as TodoWithProfile[]}
-          />
-        </div>
-        
-        {/* Right Column - Members & Frequent Tasks, 1/3 width on desktop */}
-        <div className="lg:col-span-1 flex flex-col space-y-6">
-          {/* Members */}
+        {/* Sidebar */}
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
           <MembersList 
             members={members || []} 
             organizationId={id}
             isCreator={isCreator}
             currentUserId={session.user.id}
           />
+
+          <div id="chat" className="scroll-mt-28">
+            <OrganizationChat
+              organizationId={id}
+              currentUserId={session.user.id}
+              initialMessages={(initialMessages || []) as OrgMessageWithProfile[]}
+            />
+          </div>
           
-          {/* Frequent Tasks Templates */}
-          <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/80 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
-            <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 sm:px-6 sm:py-4">
-              <h2 className="text-base font-medium text-slate-50 sm:text-lg">Frequent task templates</h2>
-              {isCreator && (
-                <Link
-                  href={`/frequent-tasks/create?org=${id}`}
-                  className="text-xs font-medium text-cyan-300 hover:text-cyan-200 sm:text-sm"
-                >
-                  Add Template
-                </Link>
-              )}
-            </div>
-            
-            {frequentTasks && frequentTasks.length > 0 ? (
-              <ul className="divide-y divide-slate-800/80">
-                {frequentTasks.map((task: FrequentTask) => (
-                  <li key={task.id} className="px-4 sm:px-6 py-3 sm:py-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div>
-                        <p className="font-medium text-slate-50">{task.title}</p>
-                        {task.description && (
-                          <p className="mt-1 text-xs text-slate-300 sm:text-sm">{task.description}</p>
-                        )}
-                        <div className="flex flex-wrap mt-2 gap-1 sm:gap-2">
-                          {task.priority && (
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-xs ${
-                                task.priority === 'high'
-                                  ? 'bg-red-500/15 text-red-300 border border-red-500/40'
-                                  : task.priority === 'medium'
-                                  ? 'bg-amber-400/10 text-amber-200 border border-amber-300/40'
-                                  : 'bg-emerald-400/10 text-emerald-200 border border-emerald-300/40'
-                              }`}
-                            >
-                              {task.priority}
-                            </span>
-                          )}
-                          {task.tags && task.tags.map((tag: string) => (
-                            <span
-                              key={tag}
-                              className="rounded-full bg-slate-900 px-2 py-0.5 text-xs text-slate-200 ring-1 ring-slate-700/80"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      {/* Mobile-friendly link */}
-                      <Link
-                        href={`/todo/create?template=${task.id}`}
-                        className="inline-block rounded-md border border-slate-700 px-2 py-1 text-xs text-cyan-300 hover:bg-slate-900 hover:text-cyan-200 sm:text-sm"
-                      >
-                        Use Template
-                      </Link>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="px-4 py-4 text-center text-sm text-slate-400 sm:px-6">
-                No frequent task templates yet.
-              </div>
-            )}
+          <div id="templates" className="scroll-mt-28">
+            <FrequentTaskTemplatesCard
+              organizationId={id}
+              frequentTasks={(frequentTasks || []) as FrequentTask[]}
+              isCreator={isCreator}
+            />
           </div>
         </div>
       </div>

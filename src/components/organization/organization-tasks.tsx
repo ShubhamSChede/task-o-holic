@@ -242,12 +242,13 @@ function OrganizationTasksContent({
             <Loader />
           </div>
         ) : todos && todos.length > 0 ? (
-          <div className="grid gap-3 p-3 sm:grid-cols-1 sm:gap-4 sm:p-4">
+          <div className="grid gap-2 p-3 sm:grid-cols-1 sm:gap-3 sm:p-4">
             {todos.map((todo: TodoWithProfile) => (
-              <div key={todo.id} className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3 sm:p-4">
+              <div key={todo.id}>
                 <TodoItem
                   todo={todo}
                   userId={userId}
+                  density="compact"
                 />
                 <div className="mt-2 text-xs text-slate-400 sm:mt-3">
                   Created by: {todo.created_by === userId ? 'You' : todo.profiles?.full_name || 'Unknown'}
