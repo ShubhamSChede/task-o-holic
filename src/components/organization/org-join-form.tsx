@@ -108,18 +108,18 @@ export default function OrgJoinForm() {
   };
   
   return (
-    <Card className="border-purple-200 shadow-sm">
+    <Card className="border-slate-800/80 bg-slate-950/80 shadow-[0_20px_60px_rgba(15,23,42,0.95)]">
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6 pt-6">
           {error && (
-            <Alert variant="destructive" className="bg-red-50 text-red-500 border-red-200">
+            <Alert variant="destructive" className="bg-red-950/60 text-red-300 border-red-500/40">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-purple-700">
-              Organization Name *
+            <Label htmlFor="name" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
+              Organization name *
             </Label>
             <Input
               id="name"
@@ -128,13 +128,13 @@ export default function OrgJoinForm() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400"
               disabled={loading}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-purple-700">
+            <Label htmlFor="password" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
               Password *
             </Label>
             <Input
@@ -144,7 +144,7 @@ export default function OrgJoinForm() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="border-purple-200 text-purple-900 focus-visible:ring-purple-500"
+              className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400"
               disabled={loading}
             />
           </div>
@@ -154,7 +154,7 @@ export default function OrgJoinForm() {
           <Button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white mt-2"
+            className="mt-2 bg-cyan-400 text-slate-950 hover:bg-cyan-300"
           >
             {loading ? (
               <>
@@ -162,7 +162,7 @@ export default function OrgJoinForm() {
                 Joining...
               </>
             ) : (
-              'Join Organization'
+              'Join organization'
             )}
           </Button>
           <Button
@@ -170,7 +170,7 @@ export default function OrgJoinForm() {
             variant="outline"
             onClick={() => router.back()}
             disabled={loading}
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
+            className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
           >
             Cancel
           </Button>

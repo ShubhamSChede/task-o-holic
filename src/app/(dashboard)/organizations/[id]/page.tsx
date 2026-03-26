@@ -1,10 +1,13 @@
 // src/app/(dashboard)/organizations/[id]/page.tsx
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MembersList from '@/components/organization/members-list';
 import OrganizationTasks from '@/components/organization/organization-tasks';
 import type { Todo, FrequentTask, Organization, OrganizationMember } from '@/types/supabase';
+import OrganizationTldrawMiniPreview from '@/components/tldraw/organization-tldraw-mini-preview'
+import type { TLEditorSnapshot } from 'tldraw'
 
 
 
@@ -27,6 +30,7 @@ export default async function OrganizationPage({
   params: Promise<{ id: string }>;
 }) {
   const supabase = await createClient();
+  const supabaseAdmin = createAdminClient();
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
@@ -104,6 +108,17 @@ export default async function OrganizationPage({
     .select('*')
     .eq('organization_id', id)
     .order('created_at', { ascending: false });
+
+  // Latest-only tldraw snapshot for mini preview
+  const { data: stateData } = await supabaseAdmin
+    .from('tldraw_room_state')
+    .select('snapshot')
+    .eq('org_id', id)
+    .maybeSingle()
+
+  const initialSnapshot = (stateData?.snapshot ?? null) as
+    | TLEditorSnapshot
+    | null
   
   return (
     <div className="space-y-6 px-2 sm:px-0">
@@ -116,6 +131,12 @@ export default async function OrganizationPage({
             className="mt-2 rounded-full bg-cyan-400 px-3 py-1.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300 sm:px-4 sm:py-2"
           >
             Create Task
+          </Link>
+          <Link
+            href={`/organizations/${id}/tldraw`}
+            className="mt-2 rounded-full border border-slate-700 bg-slate-900/40 px-3 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/60 hover:bg-slate-800/60 sm:px-4 sm:py-2"
+          >
+            Open canvas
           </Link>
           {isCreator && (
             <Link
@@ -157,6 +178,29 @@ export default async function OrganizationPage({
             <span className="font-medium text-slate-100">{todos?.length || 0}</span>
           </div>
         </div>
+      </div>
+
+      {/* Canvas Mini Preview (wide) */}
+      <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.9)] sm:p-6">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-base font-medium text-slate-50 sm:text-lg">
+              Canvas preview
+            </h2>
+            <p className="text-sm text-slate-400">
+              Latest board snapshot for this organization.
+            </p>
+          </div>
+
+          <Link
+            href={`/organizations/${id}/tldraw`}
+            className="rounded-full border border-slate-700 bg-slate-900/40 px-3 py-1.5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/60 hover:bg-slate-800/60"
+          >
+            View full canvas
+          </Link>
+        </div>
+
+        <OrganizationTldrawMiniPreview snapshot={initialSnapshot} />
       </div>
       
       {/* Responsive grid layout - Tasks on left, Members & Templates on right */}
