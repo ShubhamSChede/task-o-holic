@@ -77,6 +77,15 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Gemini AI helper state (suggests title + description)
+  const [aiInput, setAiInput] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
+  const [aiSuggestion, setAiSuggestion] = useState<{
+    title: string
+    description: string
+  } | null>(null)
+
   // Check for template and organization parameters when the component mounts
   useEffect(() => {
     const loadTemplateData = async () => {
@@ -147,6 +156,69 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
     setFormData((prev) => ({ ...prev, is_complete: checked }));
   };
 
+  const handleGenerateWithAI = async () => {
+    const trimmedPrompt = aiInput.trim()
+    const fallbackPrompt =
+      trimmedPrompt ||
+      formData.description.trim() ||
+      formData.title.trim()
+
+    if (!fallbackPrompt) return
+
+    setAiLoading(true)
+    setAiError(null)
+
+    try {
+      const tagsArr =
+        formData.tags
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean) || []
+
+      const payload = {
+        prompt: fallbackPrompt,
+        context: {
+          priority: formData.priority || null,
+          tags: tagsArr.length ? tagsArr : null,
+          due_date: formData.due_date ? formData.due_date.toISOString() : null,
+        },
+      }
+
+      const res = await fetch('/api/gemini/task-helper', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => null)
+        throw new Error(json?.error ?? 'Failed to generate suggestion')
+      }
+
+      const json = (await res.json()) as { title: string; description: string }
+      setAiSuggestion({
+        title: json.title,
+        description: json.description,
+      })
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Failed to generate suggestion'
+      setAiError(message)
+    } finally {
+      setAiLoading(false)
+    }
+  }
+
+  const handleAcceptAISuggestion = () => {
+    if (!aiSuggestion) return
+    setFormData((prev) => ({
+      ...prev,
+      title: aiSuggestion.title,
+      description: aiSuggestion.description,
+    }))
+    setAiSuggestion(null)
+    setAiError(null)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -202,6 +274,102 @@ export default function TodoForm({ initialData, organizations, mode }: TodoFormP
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          {/* AI Helper */}
+          <div className="rounded-xl border border-slate-800/80 bg-slate-900/30 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <Label className="text-slate-300 text-xs uppercase tracking-[0.14em]">
+                  AI helper
+                </Label>
+                <p className="mt-2 text-sm text-slate-400">
+                  Describe the task in your own words. Click <span className="text-slate-200 font-medium">Generate</span>, then use <span className="text-slate-200 font-medium">Accept</span> to autofill the form.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-3 space-y-2">
+              <Textarea
+                id="ai_task_idea"
+                name="ai_task_idea"
+                value={aiInput}
+                onChange={(e) => setAiInput(e.target.value)}
+                rows={2}
+                placeholder="e.g., Prepare the project kickoff deck and share it with the team."
+                className="border-slate-700 bg-slate-900 text-slate-50 focus-visible:ring-cyan-400 resize-none"
+                disabled={loading || aiLoading}
+              />
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  type="button"
+                  onClick={handleGenerateWithAI}
+                  disabled={loading || aiLoading}
+                  className="bg-cyan-400 text-slate-950 hover:bg-cyan-300"
+                >
+                  {aiLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    'Generate title & description'
+                  )}
+                </Button>
+
+                {aiSuggestion ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleAcceptAISuggestion}
+                    className="border-cyan-400/50 bg-slate-900/30 text-cyan-200 hover:bg-slate-800/40"
+                    disabled={loading || aiLoading}
+                  >
+                    Accept
+                  </Button>
+                ) : null}
+
+                {aiSuggestion ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setAiSuggestion(null)
+                      setAiError(null)
+                    }}
+                    className="border-slate-700 bg-slate-900/30 text-slate-200 hover:bg-slate-800/40"
+                    disabled={loading || aiLoading}
+                  >
+                    Dismiss
+                  </Button>
+                ) : null}
+              </div>
+
+              {aiError ? (
+                <div className="rounded-lg border border-red-500/40 bg-red-950/40 p-2 text-sm text-red-200">
+                  {aiError}
+                </div>
+              ) : null}
+            </div>
+
+            {aiSuggestion ? (
+              <div className="mt-4 rounded-xl border border-slate-800/80 bg-slate-950/40 p-3">
+                <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-300">
+                  Preview
+                </div>
+                <div className="mt-2 space-y-2">
+                  <div>
+                    <div className="text-sm font-semibold text-slate-50">
+                      {aiSuggestion.title}
+                    </div>
+                  </div>
+                  <div className="text-sm text-slate-300 whitespace-pre-wrap">
+                    {aiSuggestion.description}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="title" className="text-slate-300 text-xs uppercase tracking-[0.14em]">
